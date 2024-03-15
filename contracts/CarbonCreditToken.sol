@@ -51,4 +51,10 @@ contract CarbonCreditToken {
         // Transfers from tx.origin to receipient
         erc20Contract.transferFrom(sender,recipient,amt);
     }
+
+    function destroyCCT(address tokenOwner, uint256 tokenAmount) public returns (uint256) {
+        require(checkCCT(tokenOwner) >= tokenAmount, "Insufficient BT to burn");
+        erc20Contract.burn(tokenOwner, tokenAmount);
+        return tokenAmount;
+    }
 }
