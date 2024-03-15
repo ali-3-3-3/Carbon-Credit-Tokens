@@ -61,9 +61,9 @@ contract ERC20 {
     mapping(address => uint256) balances;
     
     
-    string public constant name = "DiceToken";
-    string public constant symbol = "DT";
-    uint8 public constant decimals = 18;
+    string public constant name = "CarbonCreditToken";
+    string public constant symbol = "CCT";
+    uint8 public constant decimals = 18; //idk what this is
     uint256 totalSupply_;
   
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -130,12 +130,6 @@ contract ERC20 {
     _;
   }
 
-
-  /*
-  Functions that are no longer needed // ====MIDTERMS 2023====
-  *
-
-
   // /**
   //  * @dev Function to stop minting new tokens.
   //  * @return True if the operation was successful.
@@ -147,23 +141,23 @@ contract ERC20 {
   // }
 
 
-  // /**
-  //  * @dev Transfer tokens from one address to another
-  //  * @param _from address The address which you want to send tokens from
-  //  * @param _to address The address which you want to transfer to
-  //  * @param _value uint256 the amount of tokens to be transferred
-  //  */
-  // function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-  //   require(_to != address(0));
-  //   require(_value <= balances[_from], "From doesn't have enough balance");
-  //   require(_value <= allowed[_from][tx.origin], "Not allowed to spend this much");
+  /**
+   * @dev Transfer tokens from one address to another
+   * @param _from address The address which you want to send tokens from
+   * @param _to address The address which you want to transfer to
+   * @param _value uint256 the amount of tokens to be transferred
+   */
+  function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
+    require(_to != address(0));
+    require(_value <= balances[_from], "From doesn't have enough balance");
+    require(_value <= allowed[_from][tx.origin], "Not allowed to spend this much");
 
-  //   balances[_from] = balances[_from].sub(_value);
-  //   balances[_to] = balances[_to].add(_value);
-  //   allowed[_from][tx.origin] = allowed[_from][tx.origin].sub(_value);
-  //   emit Transfer(_from, _to, _value);
-  //   return true;
-  // }
+    balances[_from] = balances[_from].sub(_value);
+    balances[_to] = balances[_to].add(_value);
+    allowed[_from][tx.origin] = allowed[_from][tx.origin].sub(_value);
+    emit Transfer(_from, _to, _value);
+    return true;
+  }
 
   // /**
   //  * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
