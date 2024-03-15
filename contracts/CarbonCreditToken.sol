@@ -17,16 +17,22 @@ contract CarbonCreditToken {
     * @param weiAmt uint256 amount indicating the amount of wei that was passed
     * @return A uint256 representing the amount of DT bought by the msg.sender.
     */
-
-    function getCCT(address recipient, uint256 weiAmt)
+    function getCCT(address recipient, uint256 amtOfCCT)
         public
         returns (uint256)
     {
-        //1 ether = 1 CCT
-        uint256 amt = weiAmt / (1000000000000000000); // Convert weiAmt to Carbon Credit Token
-        erc20Contract.mint(recipient, amt);
+        erc20Contract.mint(recipient, amtOfCCT);
         return amt; 
     }
+    // function getCCT(address recipient, uint256 weiAmt)
+    //     public
+    //     returns (uint256)
+    // {
+    //     //1 ether = 1 CCT
+    //     uint256 amt = weiAmt / (1000000000000000000); // Convert weiAmt to Carbon Credit Token
+    //     erc20Contract.mint(recipient, amt);
+    //     return amt; 
+    // }
     /**
     * @dev Function to check the amount of CCT the msg.sender has
     * @param ad address of the recipient that wants to check their DT
