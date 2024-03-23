@@ -39,10 +39,9 @@ contract CompanyContract {
         emit companyAdded(companyId);
     }
 
-
     function addProject(uint256 companyId, string memory companyName, uint256 projectId, string memory desc, uint256 daystillCompletion) public payable {
         require(msg.value > 0.01 ether, "at least 0.01 ETH is needed to add a company");
-        //if company has not been listed then add comapny first before adding project 
+        //if company has not been listed then add company first before adding project 
         Company storage company = companies[companyId];
         if (company.companyId == 0) {
             addCompany(companyId, companyName);
@@ -63,3 +62,4 @@ contract CompanyContract {
         emit projectAdded(companyId, projectId);
     }
 }
+
