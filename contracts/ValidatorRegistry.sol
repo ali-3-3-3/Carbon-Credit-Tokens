@@ -1,6 +1,7 @@
 pragma solidity ^0.5.0;
 
 contract ValidatorRegistry {
+    address _owner;
     mapping(address => bool) public validators;
 
     event ValidatorAdded(address validator);

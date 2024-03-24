@@ -59,7 +59,7 @@ contract CarbonCreditToken {
     }
 
     function destroyCCT(address tokenOwner, uint256 tokenAmount) public returns (uint256) {
-        require(checkCCT(tokenOwner) >= tokenAmount, "Insufficient BT to burn");
+        require(checkCCT(tokenOwner) >= tokenAmount, "Insufficient CCT to burn");
         erc20Contract.burn(tokenOwner, tokenAmount);
         return tokenAmount;
     }

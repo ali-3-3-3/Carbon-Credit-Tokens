@@ -2,64 +2,116 @@ pragma solidity ^0.5.0;
 
 contract CompanyContract {
 
+    address _owner;
     enum projectState { ongoing, completed } //add a modifier that updates state depending on time in carbon market 
-    mapping(uint256 => Company) companies; 
+    mapping(address => Company) companies; 
     mapping(uint256 => Project) projects;
+    mapping(address => uint256[]) companyProjects;
 
     struct Company {
-        uint256 companyId; 
-        string companyName;
         address company_address;
-        uint256[] projectList; 
+        string companyName;
+        uint256[] projectList; // dk if this is still needed
+        uint256 projectCount;
     }
     
     struct Project {
-        uint256 projectId;
-        uint256 companyId;
+        address companyAddress;
+        string projectName;
         string desc;
-        uint256[] tokenIds;
-        uint256 cctamount;
+        uint256 cctAmount;
+        uint256 cctSold;
+        uint256 cctListed;
         project_state state; 
         uint256 daystillCompletion;
     }
 
-    event companyAdded(uint256 companyId);
-    event projectAdded(uint256 companyId, uint256 projectId);
+    uint256 numProjects = 0;
+    event companyAdded(address companyAddress);
+    event projectAdded(address companyAddress, uint256 projectId);
 
-
-    function addCompany(uint256 companyId, string memory companyName) public {
-        require(!companies.contains(companyId), "Company already exists");
-        //are we making addCompany payable?
-        Company memory newCompany;
-        newCompany.companyId = companyId;
-        newCompany.companyName = companyName;
-        newCompany.company_address = msg.sender;
-        newCompany.projectCount = 0;
-        companies[companyId] = newCompany;
-        emit companyAdded(companyId);
+    modifier contractOwnerOnly() {
+        require(_owner == msg.sender);
+        _;
     }
 
-    function addProject(uint256 companyId, string memory companyName, uint256 projectId, string memory desc, uint256 daystillCompletion) public payable {
+    function projectCompanyOwner(uint256 projectId, address companyAddress) public (bool) {
+        uint256[] projectsByCompany = companyProjects[companyAddress];
+        bool project = false;
+        for (int i = 0; i < projectsByCompany.length; i++) {
+            if (projectsByCompany[i] == projectId) {
+                project = true;
+            }
+        }
+
+        return project;
+    }
+
+    function addCompany(address companyAddress, string memory companyName) public contractOwnerOnly() { // only contract owner can add companies in
+        require(!companies.contains(msg.sender), "Company already added");
+        //are we making addCompany payable?
+        Company memory newCompany;
+        newCompany.companyName = companyName;
+        newCompany.company_address = companyAddress;
+        newCompany.projectCount = 0;
+        companies[companyAddress] = newCompany;
+        emit companyAdded(companyAddress);
+    }
+
+    function addProject(string pName, string memory companyName, string memory desc, uint256 daystillCompletion) public payable { // companies themselves add project
         require(msg.value > 0.01 ether, "at least 0.01 ETH is needed to add a company");
         //if company has not been listed then add company first before adding project 
-        Company storage company = companies[companyId];
-        if (company.companyId == 0) {
-            addCompany(companyId, companyName);
+        Company storage company = companies[msg.sender];
+        if (company.company_address == address(0)) {
+            addCompany(msg.sender, companyName);
         }
-        require(!company.projectList.contains(projectId), "Project already exists");
+
         //create project
         Project memory newProject;
-        newProject.projectId = projectId;
-        newProject.companyId = companyId;
+        uint256 thisProjectId = numProjects++;
+        newProject.projectName = pName;
+        newProject.companyAddress = msg.sender;
         newProject.desc = desc;
         newProject.state = project_state.ongoing;
         newProject.daystillCompletion = daystillCompletion;
-        projects[projectId] = newProject;
+        newProject.cctListed = 0;
+        newProjects.cctSold = 0;
+        projects[thisProjectId] = newProject;
 
         //edit company
-        company.projectList.push(projectId);
+        company.projectList.push(thisProjectId);
+        company.projectCount++;
+        companyProjects[msg.sender].push(thisProjectId);
 
-        emit projectAdded(companyId, projectId);
+        emit projectAdded(msg.sender, thisProjectId);
+    }
+
+    function checkSufficientCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public (bool) {
+        require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
+        if (projects[projectId].cctSold + cctAmt > projects[projectId].cctAmount) {
+            return false;
+        }
+        return true;
+    }
+
+    function sellCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
+        require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
+
+        projects[projectId].cctSold += cctAmt;
+    }
+
+    function checkCCTListed(address companyAddress, uint256 projectId, uint256 cctAmt) public (bool) {
+        require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
+        if (projects[projectId].cctListed + cctAmt > projects[projectId].cctAmount) {
+            return false;
+        } 
+        return true;
+    }
+
+    function listCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
+        require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
+
+        projects[projectId].cctListed += cctAmt;
     }
 }
 
