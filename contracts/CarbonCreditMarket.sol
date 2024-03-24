@@ -2,10 +2,13 @@ pragma solidity ^0.5.0;
 
 import "./ERC20.sol";
 import "./ValidatorRegistry.sol";
+import "./CarbonCreditToken.sol";
+import "./CompanyContract.sol";
 
 contract CarbonCreditMarket {
     CarbonCreditToken carbonCreditTokenInstance;
     ValidatorRegistry validatorRegistryInstance;
+    CompanyContract companyContractInstance;
     address _owner;
 
     mapping(address => bool) public isVerifier;
@@ -16,9 +19,10 @@ contract CarbonCreditMarket {
     event BuyCredit(address buyer, uint256 amount);
     event ReturnCredits(address seller, uint256 amount);
 
-      constructor(CarbonCreditToken carbonCreditTokenAddress, ValidatorRegistry validatorRegistryAddress) public {
+      constructor(CompanyContract companyContractAddress, CarbonCreditToken carbonCreditTokenAddress, ValidatorRegistry validatorRegistryAddress) public {
         carbonCreditTokenInstance = carbonCreditTokenAddress;
         validatorRegistryInstance = validatorRegistryAddress;
+        companyContractInstance = companyContractAddress;
     }
 
     modifier onlyOwner() {
@@ -34,16 +38,16 @@ contract CarbonCreditMarket {
         // Sell carbon credits
     function sell(uint256 _cctAmount, uint256 projectId) public {
         require(_cctAmount > 0, "Invalid amount");
-        require(carbonCreditTokenInstance.balanceOf(msg.sender) >= _cctAmount, "Insufficient CCT balance");
-        require(carbonCreditTokenInstance.checkCCTListed(msg.sender, projectId, _cctAmount), "CCT for project overexceeded");
+        require(carbonCreditTokenInstance.checkCCT(msg.sender) >= _cctAmount, "Insufficient CCT balance");
+        require(companyContractInstance.checkCCTListed(msg.sender, projectId, _cctAmount), "CCT for project overexceeded");
 
         carbonCreditTokenInstance.transferFrom(msg.sender, address(this), _cctAmount); //sender, recipient
-        carbonCreditTokenInstance.listCCT(msg.sender, projectId, _cctAmount);
+        companyContractInstance.listCCT(msg.sender, projectId, _cctAmount);
         
         // check if project has been added by company
-        uint256[] projectList = companyProjects[msg.sender];
+        uint256[] storage projectList = companyProjects[msg.sender];
         bool projectAdded = false;
-        for (int i = 0; i < projectList.length; i++) {
+        for (uint256 i = 0; i < projectList.length; i++) {
             if (projectList[i] == projectId) {
                 projectAdded = true;
             }
@@ -60,14 +64,14 @@ contract CarbonCreditMarket {
      // Buy carbon credits
     function buy(uint256 _cctAmount, address companyAddress, uint256 projectId) public payable {
         require(_cctAmount > 0, "Invalid amount");
-        require(carbonCreditTokenInstance.checkSufficientCCT(companyAddress, projectId, _cctAmount), "Insufficient tokens to buy");
+        require(companyContractInstance.checkSufficientCCT(companyAddress, projectId, _cctAmount), "Insufficient tokens to buy");
         
         carbonCreditTokenInstance.transfer(msg.sender, _cctAmount);
-        carbonCreditTokenInstance.sellCCT(companyAddress, projectId, _cctAmount);
+        companyContractInstance.sellCCT(companyAddress, projectId, _cctAmount);
 
-        address[] buyerList = projectBuyers[projectId];
+        address[] storage buyerList = projectBuyers[projectId];
         bool buyerAdded = false;
-        for (int i = 0; i < buyerList.length; i++) {
+        for (uint256 i = 0; i < buyerList.length; i++) {
             if (buyerList[i] == msg.sender) {
                 buyerAdded = true;
             }
@@ -78,8 +82,5 @@ contract CarbonCreditMarket {
         
         emit BuyCredit(msg.sender, _cctAmount);
     }
-
-
-
 
 }

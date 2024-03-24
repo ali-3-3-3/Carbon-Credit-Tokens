@@ -22,7 +22,7 @@ contract CarbonCreditToken {
         returns (uint256)
     {
         erc20Contract.mint(recipient, amtOfCCT);
-        return amt; 
+        return amtOfCCT; 
     }
     // function getCCT(address recipient, uint256 weiAmt)
     //     public

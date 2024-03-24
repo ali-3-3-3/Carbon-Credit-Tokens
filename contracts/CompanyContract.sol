@@ -22,7 +22,7 @@ contract CompanyContract {
         uint256 cctAmount;
         uint256 cctSold;
         uint256 cctListed;
-        project_state state; 
+        projectState state; 
         uint256 daystillCompletion;
     }
 
@@ -35,10 +35,10 @@ contract CompanyContract {
         _;
     }
 
-    function projectCompanyOwner(uint256 projectId, address companyAddress) public (bool) {
-        uint256[] projectsByCompany = companyProjects[companyAddress];
+    function projectCompanyOwner(uint256 projectId, address companyAddress) public view returns (bool) {
+        uint256[] memory projectsByCompany = companyProjects[companyAddress];
         bool project = false;
-        for (int i = 0; i < projectsByCompany.length; i++) {
+        for (uint256 i = 0; i < projectsByCompany.length; i++) {
             if (projectsByCompany[i] == projectId) {
                 project = true;
             }
@@ -48,7 +48,7 @@ contract CompanyContract {
     }
 
     function addCompany(address companyAddress, string memory companyName) public contractOwnerOnly() { // only contract owner can add companies in
-        require(!companies.contains(msg.sender), "Company already added");
+        require(companies[msg.sender].company_address == address(0), "Company already added");
         //are we making addCompany payable?
         Company memory newCompany;
         newCompany.companyName = companyName;
@@ -58,7 +58,7 @@ contract CompanyContract {
         emit companyAdded(companyAddress);
     }
 
-    function addProject(string pName, string memory companyName, string memory desc, uint256 daystillCompletion) public payable { // companies themselves add project
+    function addProject(string memory pName, string memory companyName, string memory desc, uint256 daystillCompletion) public payable { // companies themselves add project
         require(msg.value > 0.01 ether, "at least 0.01 ETH is needed to add a company");
         //if company has not been listed then add company first before adding project 
         Company storage company = companies[msg.sender];
@@ -72,10 +72,10 @@ contract CompanyContract {
         newProject.projectName = pName;
         newProject.companyAddress = msg.sender;
         newProject.desc = desc;
-        newProject.state = project_state.ongoing;
+        newProject.state = projectState.ongoing;
         newProject.daystillCompletion = daystillCompletion;
         newProject.cctListed = 0;
-        newProjects.cctSold = 0;
+        newProject.cctSold = 0;
         projects[thisProjectId] = newProject;
 
         //edit company
@@ -86,7 +86,7 @@ contract CompanyContract {
         emit projectAdded(msg.sender, thisProjectId);
     }
 
-    function checkSufficientCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public (bool) {
+    function checkSufficientCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public view returns (bool) {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
         if (projects[projectId].cctSold + cctAmt > projects[projectId].cctAmount) {
             return false;
@@ -94,13 +94,13 @@ contract CompanyContract {
         return true;
     }
 
-    function sellCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
+    function sellCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public view {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
 
         projects[projectId].cctSold += cctAmt;
     }
 
-    function checkCCTListed(address companyAddress, uint256 projectId, uint256 cctAmt) public (bool) {
+    function checkCCTListed(address companyAddress, uint256 projectId, uint256 cctAmt) public view returns (bool) {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
         if (projects[projectId].cctListed + cctAmt > projects[projectId].cctAmount) {
             return false;
@@ -108,7 +108,7 @@ contract CompanyContract {
         return true;
     }
 
-    function listCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
+    function listCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public view {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
 
         projects[projectId].cctListed += cctAmt;
