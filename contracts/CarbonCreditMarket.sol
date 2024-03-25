@@ -3,12 +3,12 @@ pragma solidity ^0.5.0;
 import "./ERC20.sol";
 import "./ValidatorRegistry.sol";
 import "./CarbonCreditToken.sol";
-import "./CompanyContract.sol";
+import "./Company.sol";
 
 contract CarbonCreditMarket {
     CarbonCreditToken carbonCreditTokenInstance;
     ValidatorRegistry validatorRegistryInstance;
-    CompanyContract companyContractInstance;
+    Company companyInstance;
     address _owner;
 
     mapping(address => bool) public isVerifier;
@@ -19,10 +19,10 @@ contract CarbonCreditMarket {
     event BuyCredit(address buyer, uint256 amount);
     event ReturnCredits(address seller, uint256 amount);
 
-      constructor(CompanyContract companyContractAddress, CarbonCreditToken carbonCreditTokenAddress, ValidatorRegistry validatorRegistryAddress) public {
+      constructor(Company companyAddress, CarbonCreditToken carbonCreditTokenAddress, ValidatorRegistry validatorRegistryAddress) public {
         carbonCreditTokenInstance = carbonCreditTokenAddress;
         validatorRegistryInstance = validatorRegistryAddress;
-        companyContractInstance = companyContractAddress;
+        companyInstance = companyAddress;
     }
 
     modifier onlyOwner() {
@@ -42,21 +42,21 @@ contract CarbonCreditMarket {
         require(companyContractInstance.checkCCTListed(msg.sender, projectId, _cctAmount), "CCT for project overexceeded");
 
         carbonCreditTokenInstance.transferFrom(msg.sender, address(this), _cctAmount); //sender, recipient
-        companyContractInstance.listCCT(msg.sender, projectId, _cctAmount);
+        companyInstance.listCCT(msg.sender, projectId, _cctAmount); //companyAddress, projectId, cctAmount
         
         // check if project has been added by company
         uint256[] storage projectList = companyProjects[msg.sender];
         bool projectAdded = false;
         for (uint256 i = 0; i < projectList.length; i++) {
             if (projectList[i] == projectId) {
-                projectAdded = true;
+                projectAdded = true; // project already added
             }
         }
         if (!projectAdded) {
-            companyProjects[msg.sender].push(projectId);
+            companyProjects[msg.sender].push(projectId); // add project to list of projects
         }
 
-        isSeller[msg.sender] = true;
+        isSeller[msg.sender] = true; // add address of seller to list of sellers
 
         emit ReturnCredits(msg.sender, _cctAmount);
     }
@@ -64,10 +64,10 @@ contract CarbonCreditMarket {
      // Buy carbon credits
     function buy(uint256 _cctAmount, address companyAddress, uint256 projectId) public payable {
         require(_cctAmount > 0, "Invalid amount");
-        require(companyContractInstance.checkSufficientCCT(companyAddress, projectId, _cctAmount), "Insufficient tokens to buy");
+        require(companyInstance.checkSufficientCCT(companyAddress, projectId, _cctAmount), "Insufficient tokens to buy");
         
         carbonCreditTokenInstance.transfer(msg.sender, _cctAmount);
-        companyContractInstance.sellCCT(companyAddress, projectId, _cctAmount);
+        companyInstance.sellCCT(companyAddress, projectId, _cctAmount);
 
         address[] storage buyerList = projectBuyers[projectId];
         bool buyerAdded = false;
