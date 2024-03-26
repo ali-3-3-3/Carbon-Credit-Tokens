@@ -48,17 +48,15 @@ contract Company {
         return false; // project not done by company
     }
 
-    function addCompany(address companyAddress, string memory companyName) public payable returns(uint256) contractOwnerOnly() { // only contract owner can add companies in
+    function addCompany(address companyAddress, string memory companyName) public returns(uint256) contractOwnerOnly() { // only contract owner can add companies in the carbon market
         require(companies[msg.sender].company_address == address(0), "Company already added");
-        //are we making addCompany payable? yes, to prevent spamming, like admin fees 
-        require(msg.value >= 0.01 ether, "at least 0.01 ETH is needed to add a company");
         company memory newCompany; 
         newCompany.companyName = companyName;
-        newCompany.company_address = companyAddress; // company address is the key? actually shouldnt this be like the e.g uint256 newCompanyId = numCompany++;
+        newCompany.company_address = companyAddress;
         newCompany.projectCount = 0;
         companies[companyAddress] = newCompany; // add company to list of companies, company address is the key, company is the value
         emit companyAdded(companyAddress); 
-
+        /*Not sure if we need these eventually in situations where dk company address*/
         uint256 newCompanyId = numCompanies++;
         companiesId[newCompanyId] = newCompany; //company id is the key, company is the value
         return newCompanyId;   //return new companyId
