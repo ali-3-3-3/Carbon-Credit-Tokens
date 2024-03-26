@@ -20,18 +20,19 @@ contract Company {
         uint256 cctListed;
         ProjectState state; 
         uint256 daystillCompletion;
+        mapping(address => uint256) stakedCredits; // Mapping of staked credits for each company
     }
 
     event companyAdded(address companyAddress);
     event projectAdded(address companyAddress, uint256 projectId);
 
-    address _owner;
+    address _owner = msg.sender;
     uint256 public numProjects = 0; // number of projects
     uint256 public numCompanies = 0; // number of companies
     mapping(address => company) companies; // mapping of company address to company
     mapping(uint256 => company) companiesId; // mapping of company id to company
-    mapping(uint256 => Project) projects;
-    mapping(address => uint256[]) companyProjects;
+    mapping(uint256 => Project) projects; // mapping of project id to project
+    mapping(address => uint256[]) companyProjects; // mapping of company address to list of projects
 
     modifier contractOwnerOnly() {
         require(_owner == msg.sender);
@@ -86,6 +87,28 @@ contract Company {
         thisCompany.projectCount++;
         companyProjects[msg.sender].push(thisProjectId);
         emit projectAdded(msg.sender, thisProjectId);
+    }
+
+        // Function to stake credits for a project
+    function stakeCredits(uint256 projectId, uint256 credits) public {
+        require(projects[projectId].companyAddress == msg.sender, "Only project owner can stake credits");
+        require(credits > 0, "Must stake a positive amount of credits");
+        projects[projectId].stakedCredits[msg.sender] += credits;
+    }
+
+        // Function to check if there are sufficient staked credits for a project to sell 
+    function checkSufficientStakedCredits(uint256 projectId, uint256 cctAmt) public view returns (bool) {
+        require(projectCompanyOwner(projectId, msg.sender), "Project not owned by company");
+        if (projects[projectId].stakedCredits[msg.sender] >= cctAmt) {
+            return true;
+        }
+        return false;
+    }
+
+    //function to get the staked credits for a project
+    function getStakedCredits(uint256 projectId) public view returns (uint256) {
+        require(projectCompanyOwner(projectId, msg.sender), "Project not owned by company");
+        return projects[projectId].stakedCredits[msg.sender];
     }
 
     function checkSufficientCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public view returns (bool) {
