@@ -2,13 +2,9 @@ pragma solidity ^0.5.0;
 
 contract Company {
 
-    address _owner;
     enum ProjectState { ongoing, completed } //add a modifier that updates state depending on time in carbon market 
-    mapping(address => Company) companies; 
-    mapping(uint256 => Project) projects;
-    mapping(address => uint256[]) companyProjects;
 
-    struct Company {
+    struct company {
         address company_address;
         string companyName;
         uint256[] projectList; // dk if this is still needed
@@ -26,9 +22,16 @@ contract Company {
         uint256 daystillCompletion;
     }
 
-    uint256 numProjects = 0;
     event companyAdded(address companyAddress);
     event projectAdded(address companyAddress, uint256 projectId);
+
+    address _owner;
+    uint256 public numProjects = 0; // number of projects
+    uint256 public numCompanies = 0; // number of companies
+    mapping(address => company) companies; // mapping of company address to company
+    mapping(uint256 => company) companiesId; // mapping of company id to company
+    mapping(uint256 => Project) projects;
+    mapping(address => uint256[]) companyProjects;
 
     modifier contractOwnerOnly() {
         require(_owner == msg.sender);
@@ -45,25 +48,29 @@ contract Company {
         return false; // project not done by company
     }
 
-    function addCompany(address companyAddress, string memory companyName) public contractOwnerOnly() { // only contract owner can add companies in
+    function addCompany(address companyAddress, string memory companyName) public payable returns(uint256) contractOwnerOnly() { // only contract owner can add companies in
         require(companies[msg.sender].company_address == address(0), "Company already added");
-        //are we making addCompany payable?
-        Company memory newCompany;
+        //are we making addCompany payable? yes, to prevent spamming, like admin fees 
+        require(msg.value >= 0.01 ether, "at least 0.01 ETH is needed to add a company");
+        company memory newCompany; 
         newCompany.companyName = companyName;
-        newCompany.company_address = companyAddress;
+        newCompany.company_address = companyAddress; // company address is the key? actually shouldnt this be like the e.g uint256 newCompanyId = numCompany++;
         newCompany.projectCount = 0;
-        companies[companyAddress] = newCompany;
-        emit companyAdded(companyAddress);
+        companies[companyAddress] = newCompany; // add company to list of companies, company address is the key, company is the value
+        emit companyAdded(companyAddress); 
+
+        uint256 newCompanyId = numCompanies++;
+        companiesId[newCompanyId] = newCompany; //company id is the key, company is the value
+        return newCompanyId;   //return new companyId
     }
 
     function addProject(string memory pName, string memory companyName, string memory desc, uint256 daystillCompletion) public payable { // companies themselves add project
         require(msg.value >= 0.01 ether, "at least 0.01 ETH is needed to add a company");
         //if company has not been listed then add company first before adding project 
-        Company storage company = companies[msg.sender];
-        if (company.company_address == address(0)) {
+        company storage thisCompany = companies[msg.sender];
+        if (thisCompany.company_address == address(0)) {
             addCompany(msg.sender, companyName);
         }
-
         //create project
         Project memory newProject;
         uint256 thisProjectId = numProjects++;
@@ -77,10 +84,9 @@ contract Company {
         projects[thisProjectId] = newProject;
 
         //edit company
-        company.projectList.push(thisProjectId);
-        company.projectCount++;
+        thisCompany.projectList.push(thisProjectId);
+        thisCompany.projectCount++;
         companyProjects[msg.sender].push(thisProjectId);
-
         emit projectAdded(msg.sender, thisProjectId);
     }
 
