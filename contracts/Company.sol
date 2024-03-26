@@ -49,7 +49,7 @@ contract Company {
         return false; // project not done by company
     }
 
-    function addCompany(address companyAddress, string memory companyName) public returns(uint256) contractOwnerOnly() { // only contract owner can add companies in the carbon market
+    function addCompany(address companyAddress, string memory companyName) public contractOwnerOnly() returns(uint256) { // only contract owner can add companies in the carbon market
         require(companies[msg.sender].company_address == address(0), "Company already added");
         company memory newCompany; 
         newCompany.companyName = companyName;
@@ -76,7 +76,7 @@ contract Company {
         newProject.projectName = pName;
         newProject.companyAddress = msg.sender;
         newProject.desc = desc;
-        newProject.state = projectState.ongoing;
+        newProject.state = ProjectState.ongoing;
         newProject.daystillCompletion = daystillCompletion;
         newProject.cctListed = 0;
         newProject.cctSold = 0;
@@ -89,26 +89,26 @@ contract Company {
         emit projectAdded(msg.sender, thisProjectId);
     }
 
-        // Function to stake credits for a project
-    function stakeCredits(uint256 projectId, uint256 credits) public {
-        require(projects[projectId].companyAddress == msg.sender, "Only project owner can stake credits");
+    // Function to stake credits for a project
+    function stakeCredits(address companyAddress, uint256 projectId, uint256 credits) public {
+        require(projects[projectId].companyAddress == companyAddress, "Only project owner can stake credits");
         require(credits > 0, "Must stake a positive amount of credits");
-        projects[projectId].stakedCredits[msg.sender] += credits;
+        projects[projectId].stakedCredits[companyAddress] += credits;
     }
 
-        // Function to check if there are sufficient staked credits for a project to sell 
-    function checkSufficientStakedCredits(uint256 projectId, uint256 cctAmt) public view returns (bool) {
-        require(projectCompanyOwner(projectId, msg.sender), "Project not owned by company");
-        if (projects[projectId].stakedCredits[msg.sender] >= cctAmt) {
+    // Function to check if there are sufficient staked credits for a project to sell 
+    function checkSufficientStakedCredits(address companyAddress, uint256 projectId, uint256 cctAmt) public view returns (bool) {
+        require(projectCompanyOwner(projectId, companyAddress), "Project not owned by company");
+        if (projects[projectId].stakedCredits[companyAddress] >= cctAmt) {
             return true;
         }
         return false;
     }
 
     //function to get the staked credits for a project
-    function getStakedCredits(uint256 projectId) public view returns (uint256) {
-        require(projectCompanyOwner(projectId, msg.sender), "Project not owned by company");
-        return projects[projectId].stakedCredits[msg.sender];
+    function getStakedCredits(address companyAddress, uint256 projectId) public view returns (uint256) {
+        require(projectCompanyOwner(projectId, companyAddress), "Project not owned by company");
+        return projects[projectId].stakedCredits[companyAddress];
     }
 
     function checkSufficientCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public view returns (bool) {
@@ -119,7 +119,7 @@ contract Company {
         return true;
     }
 
-    function sellCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public view {
+    function sellCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
         projects[projectId].cctSold += cctAmt;
     }
@@ -132,7 +132,7 @@ contract Company {
         return true;
     }
 
-    function listCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public view {
+    function listCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
         projects[projectId].cctListed += cctAmt;
     }

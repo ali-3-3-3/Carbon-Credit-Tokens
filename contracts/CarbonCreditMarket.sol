@@ -9,7 +9,8 @@ contract CarbonCreditMarket {
     
     event BuyCredit(address buyer, uint256 amount);
     event ReturnCredits(address seller, uint256 amount);
-    event ProjectValidated(uint256 projectId, bool isValid);
+    event ProjectValidated(address companyAddress, uint256 projectId, bool isValid);
+    event Penalty(address companyAddress, uint256 projectId, uint256 penaltyAmount);
 
     CarbonCreditToken carbonCreditTokenInstance;
     ValidatorRegistry validatorRegistryInstance;
@@ -22,7 +23,7 @@ contract CarbonCreditMarket {
     mapping(address => mapping(uint256 => uint256)) public projectStakes; //mapping of buyer address to project id to amount 
     uint256 public penaltyRate = 30; // Penalty rate (30% for example, not sure if this is the right value)
 
-      constructor(Company companyAddress, CarbonCreditToken carbonCreditTokenAddress, ValidatorRegistry validatorRegistryAddress) public {
+    constructor(Company companyAddress, CarbonCreditToken carbonCreditTokenAddress, ValidatorRegistry validatorRegistryAddress) public {
         carbonCreditTokenInstance = carbonCreditTokenAddress;
         validatorRegistryInstance = validatorRegistryAddress;
         companyInstance = companyAddress;
@@ -40,7 +41,7 @@ contract CarbonCreditMarket {
 
        // Validate a project by a validator, and handle penalty if project is invalid
     function validateProject(address companyAddress, uint256 projectId, bool isValid) public onlyValidator {
-        emit ProjectValidated(companyAddress, isValid);
+        emit ProjectValidated(companyAddress, projectId, isValid);
         if (!isValid) {
             handlePenalty(companyAddress, projectId);
         }
@@ -48,7 +49,7 @@ contract CarbonCreditMarket {
 
        // Handle penalty for a project that fails validation
     function handlePenalty(address companyAddress, uint256 projectId) internal {
-        uint256 penaltyAmount = companyInstance.getStakedCredits(projectId) * penaltyRate / 100; // Calculate total penalty amount
+        uint256 penaltyAmount = companyInstance.getStakedCredits(msg.sender, projectId) * penaltyRate / 100; // Calculate total penalty amount
         emit Penalty(companyAddress, projectId, penaltyAmount); 
         for(uint256 i = 0; i < projectBuyers[projectId].length; i++) { // Loop through buyers of the project
             address buyer = projectBuyers[projectId][i]; // Get buyer address
@@ -56,20 +57,20 @@ contract CarbonCreditMarket {
             uint256 buyerPenalty = buyerStake * penaltyRate / 100; // Calculate penalty amount for each buyer
           
             projectStakes[buyer][projectId] -= buyerPenalty; // Reduce buyer's stake by penalty amount on the project
-            carbonCreditTokenInstance.transfer(buyer, buyerPenalty); // Transfer penalty amount to buyer
+            carbonCreditTokenInstance.transferCCT(buyer, buyerPenalty); // Transfer penalty amount to buyer
         }
     }
 
     function sell(uint256 _cctAmount, uint256 projectId) public {
         require(_cctAmount > 0, "Invalid amount");
         require(carbonCreditTokenInstance.checkCCT(msg.sender) >= _cctAmount, "Insufficient CCT balance");
-        require(companyContractInstance.checkCCTListed(msg.sender, projectId, _cctAmount), "CCT for project overexceeded");
+        require(companyInstance.checkCCTListed(msg.sender, projectId, _cctAmount), "CCT for project overexceeded");
 
          // Add stake for the project
-        require(companyInstance.checkSufficientStakedCredits(_cctAmount, projectId), "Insufficient tokens to stake"); // check if company has enough tokens to stake
-        companyInstance.addStake(msg.sender, projectId, _cctAmount); //companyAddress, projectId, cctAmount
+        require(companyInstance.checkSufficientStakedCredits(msg.sender, _cctAmount, projectId), "Insufficient tokens to stake"); // check if company has enough tokens to stake
+        companyInstance.stakeCredits(msg.sender, projectId, _cctAmount); //companyAddress, projectId, cctAmount
 
-        carbonCreditTokenInstance.transferFrom(msg.sender, address(this), _cctAmount); //company, this contract, cctAmount
+        carbonCreditTokenInstance.transferCCTFrom(msg.sender, address(this), _cctAmount); //company, this contract, cctAmount
         companyInstance.listCCT(msg.sender, projectId, _cctAmount); //companyAddress, projectId, cctAmount
         
         // check if project has been added by company
@@ -93,7 +94,7 @@ contract CarbonCreditMarket {
         require(_cctAmount > 0, "Invalid amount");
         require(companyInstance.checkSufficientCCT(companyAddress, projectId, _cctAmount), "Insufficient tokens to buy"); // check if company has enough tokens to sell
         
-        carbonCreditTokenInstance.transfer(msg.sender, _cctAmount);
+        carbonCreditTokenInstance.transferCCT(msg.sender, _cctAmount);
         companyInstance.sellCCT(companyAddress, projectId, _cctAmount); //sell, and check will update cctSold in project
         projectStakes[msg.sender][projectId] += _cctAmount; // add "share" of the project's CCT bought to the buyer
 

@@ -1,15 +1,18 @@
 pragma solidity ^0.5.0;
 
+import "./CarbonCreditMarket.sol";
+
 contract ValidatorRegistry {
 
     event ValidatorAdded(address validator);
     event ValidatorRemoved(address validator);
 
+    CarbonCreditMarket carbonCreditMarketInstance;
     address _owner = msg.sender;
     mapping(address => bool) public validators;
 
-    constructor() public {
-        marketContractAddress = msg.sender;
+    constructor(CarbonCreditMarket carbonCreditMarketAddress) public {
+        carbonCreditMarketInstance = carbonCreditMarketAddress;
     }
 
     modifier onlyContractOwner() {
