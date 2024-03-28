@@ -76,7 +76,8 @@ contract CarbonCreditMarket {
         emit ProjectValidated(companyAddress, projectId, isValid); // Emit event for project validation
         if (!isValid) {
             handlePenalty(companyAddress, projectId, actualCCT);
-        } else {  // Project is valid
+        } else {
+            // Project is valid
             //Transfer CCT to buyers
             uint256[] storage buyers = projectBuyers[projectId];
             for (uint256 i = 0; i < buyers.length; i++) {
@@ -86,7 +87,9 @@ contract CarbonCreditMarket {
                 projectStakes[buyer][projectId] = 0; // Reset buyer's stake to 0
             }
             //Project's CCTAmount left is returned to company project
-            uint256 cctAmountUnsold = companyInstance.projects[projectId].cctAmount;
+            uint256 cctAmountUnsold = companyInstance
+                .projects[projectId]
+                .cctAmount;
             carbonCreditTokenInstance.getCCT(companyAddress, cctAmountUnsold); // Mint CCT to company to return unsold CCT;
             // Return penalty to seller
             uint256 stakedCredits = companyInstance.getStakedCredits(
@@ -108,11 +111,18 @@ contract CarbonCreditMarket {
         for (uint256 i = 0; i < projectBuyers[projectId].length; i++) { // Loop through buyers of the project
             address buyer = projectBuyers[projectId][i]; // Get buyer address
             uint256 buyerStake = projectStakes[buyer][projectId]; // Get buyer's stake for the project
-
-            uint256 actualBuyerCCT = (buyerStake * actualCCT) / companyInstance.projects[projectId].cctListed; // Calculate actual CCT received by the buyer
-            carbonCreditTokenInstance.getCCT(buyer, actualBuyerCCT); // Mint actual CCT to buyer
-            uint256 buyerPenalty = ((buyerStake * penaltyRate) / 100) + (actualBuyerCCT - buyerStake)  ; // Calculate penalty amount give to the buyer, which is 30% penalty distributed and the difference between buy and received CCT
-            withdrawEther(buyer, buyerPenalty); // Transfer penalty amount to buyer
+            if (actualCCT >= companyInstance.projects[projectId].cctSold) {
+                carbonCreditTokenInstance.getCCT(buyer, buyerStake); // Mint actual CCT to buyer, penalty kept by market
+                actualCCT -= buyerStake; // Reduce actual CCT by buyer's stake
+                carbonCreditTokenInstance.getCCT(companyAddress, actualCCT); // Mint CCT to company for the remaining CCT if any
+            } else {
+                uint256 actualBuyerCCT = (buyerStake * actualCCT) /
+                    companyInstance.projects[projectId].cctSold; // Calculate actual CCT received by the buyer
+                carbonCreditTokenInstance.getCCT(buyer, actualBuyerCCT); // Mint actual CCT to buyer
+                uint256 buyerPenalty = ((buyerStake * penaltyRate) / 100) +
+                    (actualBuyerCCT - buyerStake); // Calculate penalty amount give to the buyer, which is 30% penalty distributed and the difference between buy and received CCT
+                withdrawEther(buyer, buyerPenalty); // Transfer penalty amount to buyer
+            }
             projectStakes[buyer][projectId] = 0; // Reset buyer's stake to 0
         }
     }
@@ -120,7 +130,11 @@ contract CarbonCreditMarket {
     function sell(uint256 _cctAmount, uint256 projectId) public {
         //seller lists cct for sale anytime during project
         require(_cctAmount > 0, "Invalid amount");
-        require(companyInstance.projects[projectId].cctListed <= companyInstance.projects[projectId].cctAmount, "Invalid Selling Price"); // Check if cctListed is <= to cctAmount
+        require(
+            companyInstance.projects[projectId].cctListed <=
+                companyInstance.projects[projectId].cctAmount,
+            "Invalid Selling Price"
+        ); // Check if cctListed is <= to cctAmount
         require(
             companyInstance.checkCCTListed(msg.sender, projectId, _cctAmount),
             "CCT for project overexceeded"
@@ -142,7 +156,7 @@ contract CarbonCreditMarket {
             ),
             "Insufficient ether to stake"
         );
-         //Transfer the ether to contract for staking 
+        //Transfer the ether to contract for staking
         uint256 stakedAmount = (_cctAmount * 13) / 10; // sellers stake 130% (of ether), 30% is penalty
         companyInstance.stakeCredits(msg.sender, projectId, stakedAmount); //stake credits
         msg.sender.transfer(stakedAmount); // Seller Transfer 130% ether to contract for staking, 30% is penalty
