@@ -123,7 +123,7 @@ contract CarbonCreditMarket {
                 uint256 buyerCompensation = buyerStake - actualBuyerCCT; // Calculate compensation amount to buyer
                 withdrawEther(buyer, buyerCompensation ); // Transfer compensation amount to buyer
             }
-            withdrawEther(companyAddress, companyInstance.projects[projectId].cctSoldAmount); // Transfer profits to company
+            withdrawEther(companyAddress, companyInstance.projects[projectId].cctSoldAmount); // Transfer profits to company, penalty kept by market
             projectStakes[buyer][projectId] = 0; // Reset buyer's stake to 0
         }
     }
