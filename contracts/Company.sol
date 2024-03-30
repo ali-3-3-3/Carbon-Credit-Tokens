@@ -91,13 +91,8 @@ contract Company {
 
        // Function to check the ETH balance of the company
     function getCompanyEthBalance(address companyAddress) public view returns (uint256) {
-        require(companyExists(companyAddress), "Company does not exist");
-        return companies[companyAddress].ethBalance;
-    }
-
-    // Function to receive ETH
-    function () external payable {
-        companies[msg.sender].ethBalance += msg.value;
+        require(companies[companyAddress].company_address != address(0), "Company does not exist");
+        return companyAddress.balance; // get eth balance of the company (msg.sender)
     }
 
     // Function to stake credits for a project
@@ -113,7 +108,7 @@ contract Company {
         return projects[projectId].stakedCredits[companyAddress];
     }
 
-    function returnStakedCredits(address companyAddress, uint256 projectId) public {
+    function returnStakedCredits(address companyAddress, uint256 projectId) public view {
         require(projectCompanyOwner(projectId, companyAddress), "Project not owned by company");
         projects[projectId].stakedCredits[companyAddress];
     }

@@ -98,7 +98,7 @@ contract CarbonCreditMarket {
             uint256 returnPenalty = (stakedCredits * penaltyRate) / 100; // Calculate penalty amount to return to seller
             withdrawEther(companyAddress, returnPenalty + companyInstance
                 .projects[projectId]
-                .cctSoldAmount;); // Return penalty amount and profit back to seller
+                .cctSoldAmount); // Return penalty amount and profit back to seller
                  companyInstance.projects[projectId].cctAmount = 0; // Set project's CCT amount to 0, project can't be resold
         }
     }
