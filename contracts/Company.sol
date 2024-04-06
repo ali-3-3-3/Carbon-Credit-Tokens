@@ -63,13 +63,14 @@ contract Company {
         return newCompanyId;   //return new companyId
     }
 
-    function addProject(string memory pName, string memory companyName, string memory desc, uint256 daystillCompletion) public payable { // companies themselves add project
+    function addProject(string memory pName, string memory desc, uint256 daystillCompletion) public payable { // companies themselves add project
         require(msg.value >= 0.01 ether, "at least 0.01 ETH is needed to add a company");
-        //if company has not been listed then add company first before adding project 
+        //if company has not been listed, cant add company as only owner can add company
         company storage thisCompany = companies[msg.sender];
-        if (thisCompany.company_address == address(0)) {
+        /*if (thisCompany.company_address == address(0)) {
             addCompany(msg.sender, companyName);
-        }
+        }*/
+
         //create project
         Project memory newProject;
         uint256 thisProjectId = numProjects++;

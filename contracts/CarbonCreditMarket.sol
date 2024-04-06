@@ -18,12 +18,14 @@ contract CarbonCreditMarket {
     CarbonCreditToken carbonCreditTokenInstance;
     ValidatorRegistry validatorRegistryInstance;
     Company companyInstance;
+    uint256 cctBank = 0;
     address _owner = msg.sender;
     mapping(address => bool) public isVerifier;
     mapping(address => bool) public isSeller;
     mapping(address => uint256[]) public companyProjects; // Mapping of company address to list of projects
     mapping(uint256 => address[]) public projectBuyers; // Mapping of project id to list of buyers
     mapping(address => mapping(uint256 => uint256)) public projectStakes; //mapping of buyer address to project id to amount
+    mapping(address => mapping(uint256 => uint256)) public relisted; // Mapping of company address to projectId to their ccts sold, due to listing project that have been validated
 
     constructor(
         Company companyAddress,
@@ -157,24 +159,31 @@ contract CarbonCreditMarket {
             ),
             "Insufficient ether to stake"
         );
-        //Transfer the ether to contract for staking
-        uint256 stakedAmount = (_cctAmount * 13) / 10; // sellers stake 130% (of ether), 30% is penalty
-        companyInstance.stakeCredits(msg.sender, projectId, stakedAmount); //stake credits
-        msg.sender.transfer(stakedAmount); // Seller Transfer 130% ether to contract for staking, 30% is penalty
-        companyInstance.listCCT(msg.sender, projectId, _cctAmount); //update cctListed and cctAmount in project
 
-        //Check if project has been added by company
-        uint256[] storage projectList = companyProjects[msg.sender];
-        bool projectAdded = false;
-        for (uint256 i = 0; i < projectList.length; i++) {
-            if (projectList[i] == projectId) {
-                projectAdded = true; // project already added
+        if (companyInstance.projects[projectId].state == Company.ProjectState.completed) {
+            cctBank += _cctAmount; // add CCT to bank
+            relisted[msg.sender][projectId] += _cctAmount; // add cct from company to relisted
+            carbonCreditTokenInstance.transferCCT(this(address), _cctAmount); // transfer CCT to market, from seller
+        } else {
+            //Transfer the ether to contract for staking
+            uint256 stakedAmount = (_cctAmount * 13) / 10; // sellers stake 130% (of ether), 30% is penalty
+            companyInstance.stakeCredits(msg.sender, projectId, stakedAmount); //stake credits
+            msg.sender.transfer(stakedAmount); // Seller Transfer 130% ether to contract for staking, 30% is penalty
+            companyInstance.listCCT(msg.sender, projectId, _cctAmount); //update cctListed and cctAmount in project
+
+            //Check if project has been listed by company (if company has sold tokens from project before)
+            uint256[] storage projectList = companyProjects[msg.sender];
+            bool projectAdded = false;
+            for (uint256 i = 0; i < projectList.length; i++) {
+                if (projectList[i] == projectId) {
+                    projectAdded = true; // project already added
+                }
             }
+            if (!projectAdded) {
+                companyProjects[msg.sender].push(projectId); // add project to list of projects
+            }
+            isSeller[msg.sender] = true; // add address of seller to list of sellers
         }
-        if (!projectAdded) {
-            companyProjects[msg.sender].push(projectId); // add project to list of projects
-        }
-        isSeller[msg.sender] = true; // add address of seller to list of sellers
         emit ReturnCredits(msg.sender, _cctAmount);
     }
 
@@ -183,6 +192,7 @@ contract CarbonCreditMarket {
         address companyAddress,
         uint256 projectId
     ) public payable {
+        // UI: has to click on a project to buy -- hence project has to be listed for this function to be called; no checks needed
         require(_cctAmount > 0, "Invalid amount");
         require(msg.value == _cctAmount, "Invalid amount"); //ensure buyer gave correct amount of ether to contract for buying
         require(
@@ -193,19 +203,30 @@ contract CarbonCreditMarket {
             ),
             "Insufficient CCT in project to buy"
         );
-        //carbonCreditTokenInstance.transferCCT(msg.sender, _cctAmount);
+
         companyInstance.sellCCT(companyAddress, projectId, _cctAmount); //sell, update cctSold in project
-        projectStakes[msg.sender][projectId] += _cctAmount; // add "share" of the project's CCT bought to the buyer
-        address[] storage buyerList = projectBuyers[projectId];
-        bool buyerAdded = false;
-        for (uint256 i = 0; i < buyerList.length; i++) {
-            if (buyerList[i] == msg.sender) {
-                buyerAdded = true;
+
+        if (companyInstance.projects[projectId].state == Company.ProjectState.completed) {
+            require(_cctAmount <= relisted[companyAddress][projectId], "Insuffucient CCT to buy");
+            cctBank -= _cctAmount; // deduct CCT from bank
+            relisted[companyAddress][projectId] -= _cctAmount; // deduct CCT from company's relisted CCT
+            carbonCreditTokenInstance.transferCCT(msg.sender, _cctAmount); // transfer CCT to buyer
+            companyAddress.transfer(msg.value); // transfer ether to company
+        } else {
+            projectStakes[msg.sender][projectId] += _cctAmount; // add "share" of the project's CCT bought to the buyer
+
+            // check if buyer has bought from project before
+            address[] storage buyerList = projectBuyers[projectId];
+            bool buyerAdded = false;
+            for (uint256 i = 0; i < buyerList.length; i++) {
+                if (buyerList[i] == msg.sender) {
+                    buyerAdded = true;
+                }
             }
+            if (!buyerAdded) {
+                projectBuyers[projectId].push(msg.sender);
+            }
+            emit BuyCredit(msg.sender, _cctAmount);
         }
-        if (!buyerAdded) {
-            projectBuyers[projectId].push(msg.sender);
-        }
-        emit BuyCredit(msg.sender, _cctAmount);
     }
 }
