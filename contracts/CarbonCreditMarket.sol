@@ -75,7 +75,7 @@ contract CarbonCreditMarket {
             companyInstance.projects[projectId].state !=
                 Company.ProjectState.completed,
             "Project completed, cannot be validated again" 
-        ); // Check if project is already validated and completed
+        ); // Check if project is completed, cannot be validated again
         companyInstance.projects[projectId].state = Company
             .ProjectState
             .completed; // Set project state to completed
