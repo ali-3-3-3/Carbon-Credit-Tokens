@@ -122,10 +122,10 @@ contract Company {
         return true;
     }
 
-    function sellCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
+    function sellCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public { //update buy
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
-        projects[projectId].cctSold += cctAmt;
-        projects[projectId].cctAmount -= cctAmt; //the cct amount for the project decreases when sold
+        projects[projectId].cctSold += cctAmt; 
+        projects[projectId].cctAmount -= cctAmt; //the cct amount for the project decreases when buyer buys
     }
 
     function checkCCTListed(address companyAddress, uint256 projectId, uint256 cctAmt) public view returns (bool) {
@@ -138,7 +138,7 @@ contract Company {
 
     function listCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
-        projects[projectId].cctListed += cctAmt;  
+        projects[projectId].cctListed += cctAmt;  //cctListed increases when listed
         projects[projectId].cctAmount += cctAmt; //cctAmount equals cctListed when listed   
     }
 }
