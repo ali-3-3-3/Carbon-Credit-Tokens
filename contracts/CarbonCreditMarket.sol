@@ -74,7 +74,7 @@ contract CarbonCreditMarket {
         require(
             companyInstance.projects[projectId].state !=
                 Company.ProjectState.completed,
-            "Project already validated and completed"
+            "Project completed, cannot be validated again" 
         ); // Check if project is already validated and completed
         companyInstance.projects[projectId].state = Company
             .ProjectState
