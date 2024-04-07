@@ -7,13 +7,8 @@ contract ValidatorRegistry {
     event ValidatorAdded(address validator);
     event ValidatorRemoved(address validator);
 
-    CarbonCreditMarket carbonCreditMarketInstance;
     address _owner = msg.sender;
     mapping(address => bool) public validators;
-
-    constructor(CarbonCreditMarket carbonCreditMarketAddress) public {
-        carbonCreditMarketInstance = carbonCreditMarketAddress;
-    }
 
     modifier onlyContractOwner() {
         require(_owner == msg.sender);
