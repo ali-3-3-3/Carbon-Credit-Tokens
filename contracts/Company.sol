@@ -1,7 +1,12 @@
 pragma solidity ^0.5.0;
 
+/**
+ * @title Company
+ * @dev This contract represents a company and its projects in a carbon market.
+ */
 contract Company {
 
+    // Enums and structs
     enum ProjectState { ongoing, completed } //add a modifier that updates state depending on time in carbon market 
 
     struct company {
@@ -23,22 +28,36 @@ contract Company {
         mapping(address => uint256) stakedCredits; // Mapping of staked credits for each company
     }
 
+
+    // Events 
     event companyAdded(address companyAddress);
     event projectAdded(address companyAddress, uint256 projectId);
 
+
+    // State variables
     address _owner = msg.sender;
     uint256 public numProjects = 0; // number of projects
     uint256 public numCompanies = 0; // number of companies
     mapping(address => company) companies; // mapping of company address to company
     mapping(uint256 => company) companiesId; // mapping of company id to company
-    mapping(uint256 => Project) projects; // mapping of project id to project
+    mapping(uint256 => Project) public projects; // mapping of project id to project
     mapping(address => uint256[]) companyProjects; // mapping of company address to list of projects
 
+
+    /**
+     * @dev Modifier that allows only the contract owner to execute the function.
+     */
     modifier contractOwnerOnly() {
-        require(_owner == msg.sender);
+        require(_owner == msg.sender, "Only contract owner can execute this function");
         _;
     }
 
+    /**
+     * @dev Checks if a project is owned by a specific company.
+     * @param projectId The ID of the project.
+     * @param companyAddress The address of the company.
+     * @return A boolean indicating whether the project is owned by the company.
+     */
     function projectCompanyOwner(uint256 projectId, address companyAddress) public view returns (bool) {
         uint256[] memory projectsByCompany = companyProjects[companyAddress];
         for (uint256 i = 0; i < projectsByCompany.length; i++) {
@@ -49,7 +68,14 @@ contract Company {
         return false; // project not done by company
     }
 
-    function addCompany(address companyAddress, string memory companyName) public contractOwnerOnly() returns(uint256) { // only contract owner can add companies in the carbon market
+
+    /**
+     * @dev Adds a new company to the carbon market.
+     * @param companyAddress The address of the company.
+     * @param companyName The name of the company.
+     * @return The ID of the newly added company.
+     */
+    function addCompany(address companyAddress, string memory companyName) public contractOwnerOnly() returns(uint256) {
         require(companies[msg.sender].company_address == address(0), "Company already added");
         company memory newCompany; 
         newCompany.companyName = companyName;
@@ -63,13 +89,16 @@ contract Company {
         return newCompanyId;   //return new companyId
     }
 
-    function addProject(string memory pName, string memory desc, uint256 daystillCompletion) public payable { // companies themselves add project
-        require(msg.value >= 0.01 ether, "at least 0.01 ETH is needed to add a company");
-        //if company has not been listed, cant add company as only owner can add company
+
+    /**
+     * @dev Adds a new project to the carbon market.
+     * @param pName The name of the project.
+     * @param desc The description of the project.
+     * @param daystillCompletion The number of days until project completion.
+     */
+    function addProject(string memory pName, string memory desc, uint256 daystillCompletion) public payable {
+        // if company has not been listed, cant add company as only owner can add company
         company storage thisCompany = companies[msg.sender];
-        /*if (thisCompany.company_address == address(0)) {
-            addCompany(msg.sender, companyName);
-        }*/
 
         //create project
         Project memory newProject;
@@ -90,30 +119,50 @@ contract Company {
         emit projectAdded(msg.sender, thisProjectId);
     }
 
-       // Function to check the ETH balance of the company
+
+    /**
+     * @dev Returns the ETH balance of a company.
+     * @param companyAddress The address of the company.
+     * @return The ETH balance of the company.
+     */
     function getCompanyEthBalance(address companyAddress) public view returns (uint256) {
         require(companies[companyAddress].company_address != address(0), "Company does not exist");
         return companyAddress.balance; // get eth balance of the company (msg.sender)
     }
 
-    // Function to stake credits for a project
+
+    /**
+     * @dev Stakes credits for a project.
+     * @param companyAddress The address of the company.
+     * @param projectId The ID of the project.
+     * @param credits The amount of credits to stake.
+     */
     function stakeCredits(address companyAddress, uint256 projectId, uint256 credits) public {
         require(projects[projectId].companyAddress == companyAddress, "Only project owner can stake credits");
         require(credits > 0, "Must stake a positive amount of credits");
         projects[projectId].stakedCredits[companyAddress] += credits;
     }
 
-    //function to view the staked credits for a project
+
+    /**
+     * @dev Returns the staked credits for a project.
+     * @param companyAddress The address of the company.
+     * @param projectId The ID of the project.
+     * @return The amount of staked credits for the project.
+     */
     function getStakedCredits(address companyAddress, uint256 projectId) public view returns (uint256) {
         require(projectCompanyOwner(projectId, companyAddress), "Project not owned by company");
         return projects[projectId].stakedCredits[companyAddress];
     }
 
-    function returnStakedCredits(address companyAddress, uint256 projectId) public view {
-        require(projectCompanyOwner(projectId, companyAddress), "Project not owned by company");
-        projects[projectId].stakedCredits[companyAddress];
-    }
 
+    /**
+     * @dev Checks if there are sufficient CCT (Carbon Credit Tokens) for a project.
+     * @param companyAddress The address of the company.
+     * @param projectId The ID of the project.
+     * @param cctAmt The amount of CCT to check.
+     * @return A boolean indicating whether there are sufficient CCT for the project.
+     */
     function checkSufficientCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public view returns (bool) {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
         if (projects[projectId].cctSold + cctAmt > projects[projectId].cctAmount) { //when buy, cctSold increases
@@ -122,12 +171,27 @@ contract Company {
         return true;
     }
 
-    function sellCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public { //update buy
+
+    /**
+     * @dev Sells CCT (Carbon Credit Tokens) for a project.
+     * @param companyAddress The address of the company.
+     * @param projectId The ID of the project.
+     * @param cctAmt The amount of CCT to sell.
+     */
+    function sellCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
         projects[projectId].cctSold += cctAmt; 
         projects[projectId].cctAmount -= cctAmt; //the cct amount for the project decreases when buyer buys
     }
 
+
+    /**
+     * @dev Checks if there are sufficient CCT (Carbon Credit Tokens) listed for sale for a project.
+     * @param companyAddress The address of the company.
+     * @param projectId The ID of the project.
+     * @param cctAmt The amount of CCT to check.
+     * @return A boolean indicating whether there are sufficient CCT listed for sale for the project.
+     */
     function checkCCTListed(address companyAddress, uint256 projectId, uint256 cctAmt) public view returns (bool) {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
         if (projects[projectId].cctListed + cctAmt > projects[projectId].cctAmount) { //when sell, cctListed increases
@@ -136,9 +200,38 @@ contract Company {
         return true;
     }
 
+
+    /**
+     * @dev Lists CCT (Carbon Credit Tokens) for sale for a project.
+     * @param companyAddress The address of the company.
+     * @param projectId The ID of the project.
+     * @param cctAmt The amount of CCT to list for sale.
+     */
     function listCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
         projects[projectId].cctListed += cctAmt;  //cctListed increases when listed
         projects[projectId].cctAmount += cctAmt; //cctAmount equals cctListed when listed   
+    }
+
+
+    /**
+    * @dev Returns the state of a project.
+    * @param projectId The ID of the project.
+    * @return The state of the project.
+    */
+
+    function getProjectState(uint256 projectId) public view returns (ProjectState) {
+        require(projectId < numProjects, "Invalid project ID");
+        return projects[projectId].state;
+    }
+
+
+    /**
+    * @dev Sets a project state to complete.
+    * @param projectId The ID of the project.
+    */
+    function setProjectStateComplete(uint256 projectId) public {
+        require(projectId < numProjects, "Invalid project ID");
+        projects[projectId].state = ProjectState.completed;
     }
 }

@@ -2,8 +2,18 @@ pragma solidity ^0.5.0;
 
 import "./ERC20.sol";
 
+
+/**
+ * @title CarbonCreditToken
+ * @dev A token contract representing Carbon Credit Tokens.
+ */
 contract CarbonCreditToken {
+
+    // Events
     event CCTMinted(address recipient, uint256 amt);
+
+
+    // State variables
     ERC20 erc20Contract;
     address owner = msg.sender;
 
@@ -12,11 +22,13 @@ contract CarbonCreditToken {
         erc20Contract = e;
         owner = msg.sender;
     } 
+
+
     /**
-     * @dev Function to give CCT to the recipient for a given wei amount
-     * @param recipient address of the recipient that wants to buy the DT
-     * @param weiAmt uint256 amount indicating the amount of wei that was passed
-     * @return A uint256 representing the amount of DT bought by the msg.sender.
+     * @dev Function to mint Carbon Credit Tokens (CCT) to the recipient.
+     * @param recipient Address of the recipient that will receive the CCT.
+     * @param amtOfCCT Amount of CCT to mint.
+     * @return The amount of CCT minted.
      */
     function getCCT(
         address recipient,
@@ -28,35 +40,36 @@ contract CarbonCreditToken {
         emit CCTMinted(recipient, amtOfCCT);
         return amtOfCCT;
     }
-    // function getCCT(address recipient, uint256 weiAmt)
-    //     public
-    //     returns (uint256)
-    // {
-    //     //1 ether = 1 CCT
-    //     uint256 amt = weiAmt / (1000000000000000000); // Convert weiAmt to Carbon Credit Token
-    //     erc20Contract.mint(recipient, amt);
-    //     return amt;
-    // }
-    /**
-     * @dev Function to check the amount of CCT the msg.sender has
-     * @param ad address of the recipient that wants to check their DT
-     * @return A uint256 representing the amount of DT owned by the msg.sender.
-     */
 
+
+    /**
+     * @dev Function to check the credit of the owner
+     * @param ad address of the owner
+     * @return uint256 credit of the owner
+     */    
     function checkCCT(address ad) public view returns (uint256) {
         uint256 credit = erc20Contract.balanceOf(ad);
         return credit;
     }
+
+
     /**
-     * @dev Function to transfer the credit from the owner to the recipient
-     * @param recipient address of the recipient that will gain in DT
-     * @param amt uint256 aount of DT to transfer
+     * @dev Function to transfer CCT from the owner to the recipient
+     * @param recipient address of the recipient
+     * @param amt amount of CCT to transfer
      */
     function transferCCT(address recipient, uint256 amt) public {
         // Transfers from tx.origin to receipient
         erc20Contract.transfer(recipient, amt);
     }
 
+
+    /**
+     * @dev Function to transfer CCT from the owner to the recipient
+     * @param sender address of the sender
+     * @param recipient address of the recipient
+     * @param amt amount of CCT to transfer
+     */
     function transferCCTFrom(
         address sender,
         address recipient,
@@ -66,6 +79,13 @@ contract CarbonCreditToken {
         erc20Contract.transferFrom(sender, recipient, amt);
     }
 
+
+    /**
+     * @dev Function to destroy CCT
+     * @param tokenOwner address of the owner
+     * @param tokenAmount amount of CCT to destroy
+     * @return uint256 amount of CCT destroyed
+     */
     function destroyCCT(
         address tokenOwner,
         uint256 tokenAmount
