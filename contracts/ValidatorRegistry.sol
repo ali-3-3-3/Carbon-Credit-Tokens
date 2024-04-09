@@ -1,6 +1,5 @@
 pragma solidity ^0.5.0;
 
-import "./CarbonCreditMarket.sol";
 /**
  * @title ValidatorRegistry
  * @dev A contract for managing a registry of validators.
