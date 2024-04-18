@@ -12,7 +12,6 @@ contract Company {
     struct company {
         address company_address;
         string companyName;
-        uint256[] projectList; // dk if this is still needed
         uint256 projectCount;
     }
     
@@ -41,7 +40,7 @@ contract Company {
     mapping(address => company) companies; // mapping of company address to company
     mapping(uint256 => company) companiesId; // mapping of company id to company
     mapping(uint256 => Project) public projects; // mapping of project id to project
-    mapping(address => uint256[]) companyProjects; // mapping of company address to list of projects
+    mapping(address => uint256[]) public companyProjects; // mapping of company address to list of projects
 
 
     /**
@@ -75,7 +74,7 @@ contract Company {
      * @param companyName The name of the company.
      * @return The ID of the newly added company.
      */
-    function addCompany(address companyAddress, string memory companyName) public contractOwnerOnly() returns(uint256) {
+    function addCompany(address companyAddress, string memory companyName) public contractOwnerOnly returns(uint256) {
         require(companies[msg.sender].company_address == address(0), "Company already added");
         company memory newCompany; 
         newCompany.companyName = companyName;
@@ -113,7 +112,6 @@ contract Company {
         projects[thisProjectId] = newProject;
 
         //edit company
-        thisCompany.projectList.push(thisProjectId);
         thisCompany.projectCount++;
         companyProjects[msg.sender].push(thisProjectId);
         emit projectAdded(msg.sender, thisProjectId);
@@ -215,16 +213,46 @@ contract Company {
 
 
     /**
-    * @dev Returns the state of a project.
-    * @param projectId The ID of the project.
-    * @return The state of the project.
-    */
+     * @dev Returns the details of a specific project.
+     * @param projectId The ID of the project.
+     * @return The details of the project.
+     */
+    function getProjectcctAmount(uint256 projectId) public view returns (uint256) {
+        require(projectId < numProjects, "Invalid project ID");
+        Project memory project = projects[projectId];
+        return project.cctAmount;
+    }
 
+    
+    /**
+     * @dev Sets the amount of CCT for a project.
+     * @param projectId The ID of the project.
+     * @param cctAmt The amount of CCT to set.
+     */
+    function setProjectcctAmount(uint256 projectId, uint256 cctAmt) public {
+        require(projectId < numProjects, "Invalid project ID");
+        projects[projectId].cctAmount = cctAmt;
+    }
+
+    /**
+     * @dev Returns the amount of CCT sold for a project.
+     * @param projectId The ID of the project.
+     * @return The amount of CCT sold for the project.
+     */
+    function getCCTSold(uint256 projectId) public view returns (uint256) {
+        require(projectId < numProjects, "Invalid project ID");
+        return projects[projectId].cctSold;
+    }
+
+    /**
+     * @dev Returns the state of a specific project.
+     * @param projectId The ID of the project.
+     * @return The state of the project.
+     */
     function getProjectState(uint256 projectId) public view returns (ProjectState) {
         require(projectId < numProjects, "Invalid project ID");
         return projects[projectId].state;
     }
-
 
     /**
     * @dev Sets a project state to complete.

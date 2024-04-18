@@ -17,7 +17,7 @@ contract CarbonCreditToken {
     ERC20 erc20Contract;
     address owner = msg.sender;
 
-    constructor() public {
+    constructor(address _erc20TokenAddress) public {
         ERC20 e = new ERC20();
         erc20Contract = e;
         owner = msg.sender;

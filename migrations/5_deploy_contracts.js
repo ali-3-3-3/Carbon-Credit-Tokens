@@ -37,6 +37,6 @@ module.exports = function(deployer) {
          * @dev Deploy CarbonCreditMarket contract, which depends on ValidatorRegistry,
          * Company, ERC20, and CarbonCreditToken contracts.
          */
-        return deployer.deploy(CarbonCreditMarket, ValidatorRegistry.address, Company.address, ERC20.address, CarbonCreditToken.address);
+        return deployer.deploy(CarbonCreditMarket, Company.address, CarbonCreditToken.address, ValidatorRegistry.address);
     });
 };
