@@ -262,4 +262,15 @@ contract Company {
         require(projectId < numProjects, "Invalid project ID");
         projects[projectId].state = ProjectState.completed;
     }
+
+
+    /**
+     * @dev Returns the name of a specific company.
+     * @param companyAddress The address of the company.
+     * @return The name of the company.
+     */
+    function getCompanyName(address companyAddress) public view returns (string memory) {
+        require(companies[companyAddress].company_address != address(0), "Company does not exist");
+        return companies[companyAddress].companyName;
+    }
 }
