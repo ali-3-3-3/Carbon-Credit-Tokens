@@ -52,6 +52,21 @@ contract Company {
         );
         _;
     }
+/**
+     * @dev Checks that the company's details exposed can only be called by the company address aka the company itself
+     * @param companyAddress The address of the company.
+     * @return A boolean indicating whether the company has rights to view the company requested. (must be itself)
+     */
+    function companyOwner(
+        address companyAddress,
+        address senderAddress
+    ) public view returns (bool) {
+        company storage thisCompany = companies[companyAddress];
+        if (thisCompany.company_address == senderAddress) {
+            return true; // sender is the company, it is  trying to access the details of itself
+        }
+        return false; // sender does not have rights to view the company requested (not the company itself)
+    }
 
     /**
      * @dev Checks if a project is owned by a specific company.
@@ -117,7 +132,10 @@ contract Company {
         );
         // if company has not been listed, cant add company as only owner can add company
         company storage thisCompany = companies[msg.sender];
-
+        require(
+            thisCompany.company_address != address(0),
+            "Company must be added before adding project"
+        );
         uint256 intTonCO2Saved = carbonDioxideSaved / 1; // int amt of cct
 
         //create project
@@ -151,6 +169,7 @@ contract Company {
             companies[companyAddress].company_address != address(0),
             "Company does not exist"
         );
+        require(companyOwner(companyAddress, msg.sender), "You do not have access to this company");
         return companyAddress.balance; // get eth balance of the company (msg.sender)
     }
 

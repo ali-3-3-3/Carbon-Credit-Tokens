@@ -225,7 +225,7 @@ contract CarbonCreditMarket {
                 _cctAmount
             ),
             "Insufficient CCT to sell"
-        ); // Check if seller has enough cct to sell in project, especially after buy
+        ); // Check if seller has enough cct to sell in project, especially after sold ccts from this project before
 
         if (
             companyInstance.getProjectState(projectId) ==
