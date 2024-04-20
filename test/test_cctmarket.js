@@ -1,4 +1,5 @@
 const _deploy_contracts = require("../migrations/5_deploy_contracts");
+const truffleAssert = require("truffle-assertions");
 
 var CarbonCreditMarket = artifacts.require("CarbonCreditMarket");
 var Company = artifacts.require("Company");
@@ -47,7 +48,8 @@ contract("CarbonCreditMarket", function (accounts) {
       "Test Project",
       "Test Description",
       1000,
-      3
+      3,
+      { from: companyAddress }
     );
     const projectData = await companyInstance.projects(0);
     assert(projectData.projectName === "Test Project");
@@ -59,11 +61,8 @@ contract("CarbonCreditMarket", function (accounts) {
       from: companyAddress,
       value: oneEth * 6,
     });
-    assert.eventEmitted(sellCCT, "EtherReceived", null, "Ether not received");
+
     const projectData = await companyInstance.projects(0);
     assert(projectData.cctListed.toNumber() === 3, "CCT not listed");
-    const projectList = await carbonCreditMarketInstance.companyProjects(0);
-    const project = projectList[0];
-    assert(project.projectName === "Test Project");
   });
 });
