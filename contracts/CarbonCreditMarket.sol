@@ -278,20 +278,22 @@ contract CarbonCreditMarket {
     ) public payable {
         // UI: has to click on a project to buy -- hence project has to be listed for this function to be called; no checks needed
         require(_cctAmount > 0, "Invalid amount");
-        require(msg.value == _cctAmount, "Invalid amount"); //ensure buyer gave correct amount of ether to contract for buying
+        require(msg.value == _cctAmount * 1 ether, "Invalid amount"); //ensure buyer gave correct amount of ether to contract for buying
         require(
             companyInstance.checkSufficientCCT(
-                msg.sender,
+                companyAddress,
                 projectId,
                 _cctAmount
             ),
             "Insufficient CCT in project to buy"
-        );
+        ); // Check if buyer has enough cct to buy in project
+
+         companyInstance.sellCCT(companyAddress, projectId, _cctAmount); // increase cctSold in project by _cctAmount
 
         if (
             companyInstance.getProjectState(projectId) ==
             Company.ProjectState.completed
-        ) {
+        ) { 
             require(
                 _cctAmount <= relisted[companyAddress][projectId],
                 "Insuffucient CCT to buy"
