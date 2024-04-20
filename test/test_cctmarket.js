@@ -58,7 +58,7 @@ contract("CarbonCreditMarket", function (accounts) {
   it("Selling CCT from Project", async () => {
     let sellCCT = await carbonCreditMarketInstance.sell(3, 0, {
       from: companyAddress,
-      value: oneEth * 6,
+      value: oneEth * 3.9,
     });
 
     const projectData = await companyInstance.projects(0);

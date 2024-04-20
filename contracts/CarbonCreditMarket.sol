@@ -18,7 +18,6 @@ contract CarbonCreditMarket {
         bool isValid
     );
     event Penalty(address companyAddress, uint256 projectId);
-    event EtherReceived(address sender, uint256 amount);
 
     // State variables
     CarbonCreditToken carbonCreditTokenInstance;
@@ -42,11 +41,6 @@ contract CarbonCreditMarket {
         carbonCreditTokenInstance = carbonCreditTokenAddress;
         validatorRegistryInstance = validatorRegistryAddress;
         companyInstance = companyAddress;
-    }
-
-    function fallback() external payable {
-        // Emit an event to log the sender and the amount of Ether received
-        emit EtherReceived(msg.sender, msg.value);
     }
 
     /**
@@ -240,7 +234,7 @@ contract CarbonCreditMarket {
             // if project is completed
             cctBank += _cctAmount; // add CCT to bank
             relisted[msg.sender][projectId] += _cctAmount; // add cct from company to relisted
-            companyInstance.listCCT(msg.sender, projectId, _cctAmount); //update cctListed and cctAmount in project
+            companyInstance.listCCT(msg.sender, projectId, _cctAmount); //update cctListed in project
             carbonCreditTokenInstance.transferCCT(address(this), _cctAmount); // transfer CCT to market, from seller
         } else {
             //check if company has enough ether to stake only if project is ongoing
@@ -250,11 +244,9 @@ contract CarbonCreditMarket {
                 msg.value
                 ),
                 "Insufficient ether to stake"
-            );
-            //Transfer the ether to contract for staking
+            ); // Seller has to transfer 130% ether to contract for staking, 30% is penalty. Ether is transferred as msg.value is called.
             uint256 stakedAmount = (_cctAmount * 13) / 10; // sellers stake 130% (of ether), 30% is penalty
             companyInstance.stakeCredits(msg.sender, projectId, stakedAmount); //stake credits
-            msg.sender.transfer(stakedAmount); // Seller Transfer 130% ether to contract for staking, 30% is penalty
             companyInstance.listCCT(msg.sender, projectId, _cctAmount); //update cctListed in project
 
             //Check if project has been listed by company (if company has sold tokens from project before)
