@@ -18,6 +18,7 @@ contract CarbonCreditMarket {
         bool isValid
     );
     event Penalty(address companyAddress, uint256 projectId);
+    event EtherReceived(address sender, uint256 amount);
 
     // State variables
     CarbonCreditToken carbonCreditTokenInstance;
@@ -41,6 +42,11 @@ contract CarbonCreditMarket {
         carbonCreditTokenInstance = carbonCreditTokenAddress;
         validatorRegistryInstance = validatorRegistryAddress;
         companyInstance = companyAddress;
+    }
+
+    function fallback() external payable {
+        // Emit an event to log the sender and the amount of Ether received
+        emit EtherReceived(msg.sender, msg.value);
     }
 
     /**
@@ -81,6 +87,19 @@ contract CarbonCreditMarket {
             "Insufficient contract balance"
         );
         companyAddress.transfer(amount);
+    }
+
+    /**
+     * @dev Check whether or not a company has provided enough Ether to stake for a project (for penalty purposes).
+     * @param _cctAmount The amount of cct they wish to sell from the project.
+     * @param etherAmount The amount of Ether supplied.
+     */
+    function checkSufficientStake(uint256 _cctAmount, uint256 etherAmount)
+        public pure
+        returns (bool)
+    {
+        uint256 stakedAmount = (_cctAmount * 13) / 10;
+        return etherAmount >= stakedAmount;
     }
 
     /**
@@ -198,7 +217,7 @@ contract CarbonCreditMarket {
      *  Emits a `ReturnCredits` event with the seller's address and the amount of CCT sold.
      */
 
-    function sell(uint256 _cctAmount, uint256 projectId) public {
+    function sell(uint256 _cctAmount, uint256 projectId) public payable {
         //seller lists cct for sale anytime during project
         require(_cctAmount > 0, "Invalid amount");
         require(
@@ -226,10 +245,9 @@ contract CarbonCreditMarket {
         } else {
             //check if company has enough ether to stake only if project is ongoing
             require(
-                companyInstance.checkSufficientCCT(
-                    msg.sender,
-                    projectId,
-                    _cctAmount
+                checkSufficientStake(
+                _cctAmount,
+                msg.value
                 ),
                 "Insufficient ether to stake"
             );
@@ -237,7 +255,7 @@ contract CarbonCreditMarket {
             uint256 stakedAmount = (_cctAmount * 13) / 10; // sellers stake 130% (of ether), 30% is penalty
             companyInstance.stakeCredits(msg.sender, projectId, stakedAmount); //stake credits
             msg.sender.transfer(stakedAmount); // Seller Transfer 130% ether to contract for staking, 30% is penalty
-            companyInstance.listCCT(msg.sender, projectId, _cctAmount); //update cctListed and cctAmount in project
+            companyInstance.listCCT(msg.sender, projectId, _cctAmount); //update cctListed in project
 
             //Check if project has been listed by company (if company has sold tokens from project before)
             uint256[] storage projectList = companyProjects[msg.sender];

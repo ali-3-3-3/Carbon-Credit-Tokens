@@ -19,7 +19,7 @@ contract Company {
         address companyAddress;
         string projectName;
         string desc;
-        uint256 cctAmount; //cct amount for project, after sell/buy
+        uint256 cctAmount; //cct amount predicted / given for project
         uint256 cctSold;   //cct sold so far, updated after buyer buys
         uint256 cctListed; //cct listed for sale
         ProjectState state; 
@@ -95,9 +95,12 @@ contract Company {
      * @param desc The description of the project.
      * @param daystillCompletion The number of days until project completion.
      */
-    function addProject(string memory pName, string memory desc, uint256 daystillCompletion) public payable {
+    function addProject(string memory pName, string memory desc, uint256 daystillCompletion, uint256 carbonDioxideSaved) public payable {
+        require(carbonDioxideSaved >= 1, "Project must be predicted to at least save 1 ton of CO2");
         // if company has not been listed, cant add company as only owner can add company
         company storage thisCompany = companies[msg.sender];
+
+        uint256 intTonCO2Saved = carbonDioxideSaved / 1; // int amt of cct
 
         //create project
         Project memory newProject;
@@ -107,7 +110,8 @@ contract Company {
         newProject.desc = desc;
         newProject.state = ProjectState.ongoing;
         newProject.daystillCompletion = daystillCompletion;
-        newProject.cctListed = 0;
+        newProject.cctListed = 0; 
+        newProject.cctAmount = intTonCO2Saved; // industry standard, 1 ton of co2 = 1 cct.
         newProject.cctSold = 0;
         projects[thisProjectId] = newProject;
 
@@ -179,7 +183,7 @@ contract Company {
     function sellCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
         projects[projectId].cctSold += cctAmt; 
-        projects[projectId].cctAmount -= cctAmt; //the cct amount for the project decreases when buyer buys
+        // projects[projectId].cctAmount -= cctAmt; //the cct amount for the project decreases when buyer buys
     }
 
 
@@ -208,7 +212,7 @@ contract Company {
     function listCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
         require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
         projects[projectId].cctListed += cctAmt;  //cctListed increases when listed
-        projects[projectId].cctAmount += cctAmt; //cctAmount equals cctListed when listed   
+        // projects[projectId].cctAmount += cctAmt; //cctAmount equals cctListed when listed   
     }
 
 
