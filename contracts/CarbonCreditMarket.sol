@@ -125,7 +125,7 @@ contract CarbonCreditMarket {
             // Project is valid
             //Transfer CCT to buyers
             address[] storage buyers = projectBuyers[projectId];
-            for (uint256 i = 0; i < buyers.length; i++) {
+            for (uint256 i = 0; i < buyers.length; i++) { // Loop through buyers of the project 
                 address buyer = buyers[i];
                 uint256 buyerStake = projectStakes[buyer][projectId]; // Get buyer's stake for the project
                 carbonCreditTokenInstance.getCCT(buyer, buyerStake); // Mint CCT to buyer
@@ -288,8 +288,6 @@ contract CarbonCreditMarket {
             "Insufficient CCT in project to buy"
         );
 
-        companyInstance.sellCCT(companyAddress, projectId, _cctAmount); //sell, update cctSold in project
-
         if (
             companyInstance.getProjectState(projectId) ==
             Company.ProjectState.completed
@@ -300,7 +298,7 @@ contract CarbonCreditMarket {
             );
             cctBank -= _cctAmount; // deduct CCT from bank
             relisted[companyAddress][projectId] -= _cctAmount; // deduct CCT from company's relisted CCT
-            carbonCreditTokenInstance.transferCCT(msg.sender, _cctAmount); // transfer CCT to buyer
+            carbonCreditTokenInstance.transferCCT(msg.sender, _cctAmount); // transfer CCT to buyer from market
             companyAddress.transfer(msg.value); // transfer ether to company
         } else {
             projectStakes[msg.sender][projectId] += _cctAmount; // add "share" of the project's CCT bought to the buyer
