@@ -131,7 +131,7 @@ contract CarbonCreditMarket {
             // Project is valid
             //Transfer CCT to buyers
             address[] storage buyers = projectBuyers[projectId];
-            for (uint256 i = 0; i < buyers.length; i++) {
+            for (uint256 i = 0; i < buyers.length; i++) { // Loop through buyers of the project 
                 address buyer = buyers[i];
                 uint256 buyerStake = projectStakes[buyer][projectId]; // Get buyer's stake for the project
                 carbonCreditTokenInstance.getCCT(buyer, buyerStake); // Mint CCT to buyer
