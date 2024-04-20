@@ -174,17 +174,17 @@ contract Company {
     }
 
 
-    /**
-     * @dev Sells CCT (Carbon Credit Tokens) for a project.
-     * @param companyAddress The address of the company.
-     * @param projectId The ID of the project.
-     * @param cctAmt The amount of CCT to sell.
-     */
-    function sellCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
-        require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
-        projects[projectId].cctSold += cctAmt; 
-        // projects[projectId].cctAmount -= cctAmt; //the cct amount for the project decreases when buyer buys
-    }
+    // /**
+    //  * @dev Sells CCT (Carbon Credit Tokens) for a project.
+    //  * @param companyAddress The address of the company.
+    //  * @param projectId The ID of the project.
+    //  * @param cctAmt The amount of CCT to sell.
+    //  */
+    // function sellCCT(address companyAddress, uint256 projectId, uint256 cctAmt) public {
+    //     require(projectCompanyOwner(projectId, companyAddress), "Project not done by provided company");
+    //     projects[projectId].cctSold += cctAmt; 
+    //     // projects[projectId].cctAmount -= cctAmt; //the cct amount for the project decreases when buyer buys
+    // }
 
 
     /**
