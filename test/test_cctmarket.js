@@ -1,5 +1,4 @@
 const _deploy_contracts = require("../migrations/5_deploy_contracts");
-const truffleAssert = require("truffle-assertions");
 
 var CarbonCreditMarket = artifacts.require("CarbonCreditMarket");
 var Company = artifacts.require("Company");
@@ -64,5 +63,10 @@ contract("CarbonCreditMarket", function (accounts) {
 
     const projectData = await companyInstance.projects(0);
     assert(projectData.cctListed.toNumber() === 3, "CCT not listed");
+    const project = await carbonCreditMarketInstance.companyProjects(
+      companyAddress,
+      0
+    ); // here 0 means accessing the projectId from the list of projects listed by the company
+    assert(project.toNumber() === 0, "Project not found"); // here 0 is the project id
   });
 });
