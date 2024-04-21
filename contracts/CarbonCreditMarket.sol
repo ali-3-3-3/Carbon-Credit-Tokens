@@ -326,6 +326,7 @@ contract CarbonCreditMarket {
             emit BuyCredit(msg.sender, _cctAmount);
         }
     }
+
     function getProjectBuyers(
         uint256 projectId
     ) public view returns (address[] memory) {
