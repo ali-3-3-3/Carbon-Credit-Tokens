@@ -82,14 +82,15 @@ contract CarbonCreditMarket {
     //     );
     //     companyAddress.transfer(amount);
     // }
-        function withdrawEther(
+    function withdrawEther(
         address payable companyAddress,
         uint256 amount
-    ) public onlyValidator() {
+    ) public onlyValidator {
         require(
             amount <= address(this).balance,
             "Insufficient contract balance"
         );
+        amount = amount * 1 ether; //convert to wei before transfer
         companyAddress.transfer(amount);
     }
 
@@ -98,10 +99,10 @@ contract CarbonCreditMarket {
      * @param _cctAmount The amount of cct they wish to sell from the project.
      * @param etherAmount The amount of Ether supplied.
      */
-    function checkSufficientStake(uint256 _cctAmount, uint256 etherAmount)
-        public pure
-        returns (bool)
-    {
+    function checkSufficientStake(
+        uint256 _cctAmount,
+        uint256 etherAmount
+    ) public pure returns (bool) {
         uint256 stakedAmount = (_cctAmount * 13) / 10;
         return etherAmount >= stakedAmount;
     }
@@ -135,7 +136,8 @@ contract CarbonCreditMarket {
             // Project is valid
             //Transfer CCT to buyers
             address[] storage buyers = projectBuyers[projectId];
-            for (uint256 i = 0; i < buyers.length; i++) { // Loop through buyers of the project 
+            for (uint256 i = 0; i < buyers.length; i++) {
+                // Loop through buyers of the project
                 address buyer = buyers[i];
                 uint256 buyerStake = projectStakes[buyer][projectId]; // Get buyer's stake for the project
                 carbonCreditTokenInstance.getCCT(buyer, buyerStake); // Mint CCT to buyer
@@ -146,6 +148,7 @@ contract CarbonCreditMarket {
                 projectId
             );
             companyInstance.setProjectcctAmount(projectId, cctAmountUnsold); // Update project's CCT amount, project can be resold with remaining CCT by seller
+            carbonCreditTokenInstance.getCCT(companyAddress, cctAmountUnsold); // Mint CCT to company for reselling
             // Return penalty + profit to seller
             uint256 stakedCredits = companyInstance.getStakedCredits( // Get staked credits (sellers stake 130% (of ether)) for the project
                     companyAddress,
@@ -154,7 +157,7 @@ contract CarbonCreditMarket {
             uint256 returnPenalty = (stakedCredits * 3) / 1000; // Calculate penalty amount to return to seller
             withdrawEther(
                 companyAddress,
-                returnPenalty + companyInstance.getCCTSold(projectId)
+                (returnPenalty + companyInstance.getCCTSold(projectId))
             ); // Return penalty amount and profit back to seller
         }
     }
@@ -191,21 +194,30 @@ contract CarbonCreditMarket {
             if (actualCCT >= companyInstance.getCCTSold(projectId)) {
                 // If actual CCT is greater than or equal to CCT sold
                 carbonCreditTokenInstance.getCCT(buyer, buyerStake); // Mint actual CCT to buyer, penalty and profits kept by market
-                actualCCT -= buyerStake; // Reduce actual CCT by buyer's stake
-                companyInstance.setProjectcctAmount(projectId, actualCCT); // Update project's CCT amount, project can be resold with remaining CCT by seller
             } else {
                 // If actual CCT is less than CCT sold
                 uint256 actualBuyerCCT = (buyerStake * actualCCT) /
-                    companyInstance.getCCTSold(projectId); // Calculate actual CCT received by the buyer
+                    companyInstance.getCCTSold(projectId); // Calculate actual CCT received by the buyer, based on proportion
                 carbonCreditTokenInstance.getCCT(buyer, actualBuyerCCT); // Mint actual CCT to buyer
                 uint256 buyerCompensation = buyerStake - actualBuyerCCT; // Calculate compensation amount to buyer
                 withdrawEther(buyerPayable, buyerCompensation); // Transfer compensation amount to buyer
             }
+            projectStakes[buyer][projectId] = 0; // Reset buyer's stake to 0
+        }
+
+        if (actualCCT >= companyInstance.getCCTSold(projectId)) {
+            // sellers have more cct to be resold
+            uint256 cctAmountUnsold = actualCCT -
+                companyInstance.getCCTSold(projectId); // Calculate CCT amount unsold
+            companyInstance.setProjectcctAmount(projectId, cctAmountUnsold); // Update project's CCT amount, project can be resold with remaining CCT by seller
+            carbonCreditTokenInstance.getCCT(companyAddress, cctAmountUnsold); // Mint actual CCT to company
+
             withdrawEther(
                 companyAddress,
                 companyInstance.getCCTSold(projectId)
             ); // Transfer profits to company, penalty kept by market
-            projectStakes[buyer][projectId] = 0; // Reset buyer's stake to 0
+        } else {
+            withdrawEther(companyAddress, actualCCT); // Transfer profits to company (only got profits from the actual cct sold), penalty kept by market
         }
     }
 
@@ -249,10 +261,7 @@ contract CarbonCreditMarket {
         } else {
             //check if company has enough ether to stake only if project is ongoing
             require(
-                checkSufficientStake(
-                _cctAmount,
-                msg.value
-                ),
+                checkSufficientStake(_cctAmount, msg.value),
                 "Insufficient ether to stake"
             ); // Seller has to transfer 130% ether to contract for staking, 30% is penalty. Ether is transferred as msg.value is called.
             uint256 stakedAmount = (_cctAmount * 13) / 10; // sellers stake 130% (of ether), 30% is penalty
@@ -298,12 +307,12 @@ contract CarbonCreditMarket {
             "Insufficient CCT in project to buy"
         ); // Check if buyer has enough cct to buy in project
 
-         companyInstance.sellCCT(companyAddress, projectId, _cctAmount); // increase cctSold in project by _cctAmount
+        companyInstance.sellCCT(companyAddress, projectId, _cctAmount); // increase cctSold in project by _cctAmount
 
         if (
             companyInstance.getProjectState(projectId) ==
             Company.ProjectState.completed
-        ) { 
+        ) {
             require(
                 _cctAmount <= relisted[companyAddress][projectId],
                 "Insuffucient CCT to buy"
@@ -329,7 +338,9 @@ contract CarbonCreditMarket {
             emit BuyCredit(msg.sender, _cctAmount);
         }
     }
-    function getProjectBuyers(uint256 projectId) public view returns (address[] memory) {
-    return projectBuyers[projectId];
-}
+    function getProjectBuyers(
+        uint256 projectId
+    ) public view returns (address[] memory) {
+        return projectBuyers[projectId];
+    }
 }
