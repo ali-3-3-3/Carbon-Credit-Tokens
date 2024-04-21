@@ -5,8 +5,6 @@ var Company = artifacts.require("Company");
 var ValidatorRegistry = artifacts.require("ValidatorRegistry");
 var CarbonCreditToken = artifacts.require("CarbonCreditToken");
 
-const oneEth = 1000000000000000000; // 1 eth
-
 contract("CarbonCreditMarket for Completed Projects", function (accounts) {
   let companyInstance = null;
   const owner = accounts[0]; // contract owner
