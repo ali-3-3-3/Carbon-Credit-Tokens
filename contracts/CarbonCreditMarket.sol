@@ -72,10 +72,11 @@ contract CarbonCreditMarket {
      * @notice Only the contract owner can call this function.
      * @dev Throws an error if the specified amount is greater than the contract balance.
      */
-    function withdrawEther(
+
+        function withdrawEther(
         address payable companyAddress,
         uint256 amount
-    ) public onlyOwner {
+    ) public onlyValidator() {
         require(
             amount <= address(this).balance,
             "Insufficient contract balance"
@@ -324,4 +325,13 @@ contract CarbonCreditMarket {
             emit BuyCredit(msg.sender, _cctAmount);
         }
     }
+
+    /**
+ * @dev Returns the list of buyer addresses for a specific project.
+ * @param projectId The ID of the project.
+ * @return An array of addresses who are buyers of the project.
+ */
+function getProjectBuyers(uint256 projectId) public view returns (address[] memory) {
+    return projectBuyers[projectId];
+}
 }

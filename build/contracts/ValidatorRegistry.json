@@ -106,19 +106,19 @@
   "sourceMap": "119:1584:4:-;;;300:10;283:27;;;;;;;;;;;;;;;;;;;;119:1584;8:9:-1;5:2;;;30:1;27;20:12;5:2;119:1584:4;;;;;;;",
   "deployedSourceMap": "119:1584:4:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;119:1584:4;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1229:162;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1229:162:4;;;;;;;;;;;;;;;;;;;:::i;:::-;;930:156;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;930:156:4;;;;;;;;;;;;;;;;;;;:::i;:::-;;316:42;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;316:42:4;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;1587:114;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1587:114:4;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;1229:162;507:10;497:20;;:6;;;;;;;;;;;:20;;;489:75;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1336:5;1311:10;:22;1322:10;1311:22;;;;;;;;;;;;;;;;:30;;;;;;;;;;;;;;;;;;1356:28;1373:10;1356:28;;;;;;;;;;;;;;;;;;;;;;1229:162;:::o;930:156::-;507:10;497:20;;:6;;;;;;;;;;;:20;;;489:75;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1034:4;1009:10;:22;1020:10;1009:22;;;;;;;;;;;;;;;;:29;;;;;;;;;;;;;;;;;;1053:26;1068:10;1053:26;;;;;;;;;;;;;;;;;;;;;;930:156;:::o;316:42::-;;;;;;;;;;;;;;;;;;;;;;:::o;1587:114::-;1649:4;1672:10;:22;1683:10;1672:22;;;;;;;;;;;;;;;;;;;;;;;;;1665:29;;1587:114;;;:::o",
   "source": "pragma solidity ^0.5.0;\n\n/**\n * @title ValidatorRegistry\n * @dev A contract for managing a registry of validators.\n */\ncontract ValidatorRegistry {\n\n    // Events\n    event ValidatorAdded(address validator);\n    event ValidatorRemoved(address validator);\n\n    // State variables\n    address _owner = msg.sender;\n    mapping(address => bool) public validators;\n\n\n    /**\n     * @dev Modifier to restrict access to only the contract owner.\n     */\n    modifier onlyContractOwner() {\n        require(_owner == msg.sender, \"Only contract owner can call this function\");\n        _;\n    }\n\n\n    /**\n     * @dev Modifier to restrict access to only validators.\n     */\n    modifier onlyValidator() {\n        require(validators[msg.sender], \"Only validator can call this function\");\n        _;\n    }\n\n\n    /**\n     * @dev Adds a new validator to the registry.\n     * @param _validator The address of the validator to be added.\n     */\n    function addValidator(address _validator) public onlyContractOwner() {\n        validators[_validator] = true;\n        emit ValidatorAdded(_validator);\n    }\n\n\n    /**\n     * @dev Removes a validator from the registry.\n     * @param _validator The address of the validator to be removed.\n     */\n    function removeValidator(address _validator) public onlyContractOwner() {\n        validators[_validator] = false;\n        emit ValidatorRemoved(_validator);\n    }\n\n\n    /**\n     * @dev Checks if an address is a validator.\n     * @param _validator The address to be checked.\n     * @return A boolean indicating whether the address is a validator.\n     */\n    function isValidator(address _validator) public view returns (bool) {\n        return validators[_validator];\n    }\n}\n",
-  "sourcePath": "/Users/mavischeng/Desktop/IS4302/is4302/contracts/ValidatorRegistry.sol",
+  "sourcePath": "/Users/elizabeth/Desktop/is4302/groupproject/is4302/contracts/ValidatorRegistry.sol",
   "ast": {
     "absolutePath": "project:/contracts/ValidatorRegistry.sol",
     "exportedSymbols": {
       "ValidatorRegistry": [
-        2108
+        2128
       ]
     },
-    "id": 2109,
+    "id": 2129,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 2019,
+        "id": 2039,
         "literals": [
           "solidity",
           "^",
@@ -134,9 +134,9 @@
         "contractKind": "contract",
         "documentation": "@title ValidatorRegistry\n@dev A contract for managing a registry of validators.",
         "fullyImplemented": true,
-        "id": 2108,
+        "id": 2128,
         "linearizedBaseContracts": [
-          2108
+          2128
         ],
         "name": "ValidatorRegistry",
         "nodeType": "ContractDefinition",
@@ -144,20 +144,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 2023,
+            "id": 2043,
             "name": "ValidatorAdded",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 2022,
+              "id": 2042,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 2021,
+                  "id": 2041,
                   "indexed": false,
                   "name": "validator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 2023,
+                  "scope": 2043,
                   "src": "188:17:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -166,7 +166,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 2020,
+                    "id": 2040,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "188:7:4",
@@ -187,20 +187,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 2027,
+            "id": 2047,
             "name": "ValidatorRemoved",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 2026,
+              "id": 2046,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 2025,
+                  "id": 2045,
                   "indexed": false,
                   "name": "validator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 2027,
+                  "scope": 2047,
                   "src": "235:17:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -209,7 +209,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 2024,
+                    "id": 2044,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "235:7:4",
@@ -229,10 +229,10 @@
           },
           {
             "constant": false,
-            "id": 2031,
+            "id": 2051,
             "name": "_owner",
             "nodeType": "VariableDeclaration",
-            "scope": 2108,
+            "scope": 2128,
             "src": "283:27:4",
             "stateVariable": true,
             "storageLocation": "default",
@@ -241,7 +241,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 2028,
+              "id": 2048,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "283:7:4",
@@ -255,18 +255,18 @@
               "argumentTypes": null,
               "expression": {
                 "argumentTypes": null,
-                "id": 2029,
+                "id": 2049,
                 "name": "msg",
                 "nodeType": "Identifier",
                 "overloadedDeclarations": [],
-                "referencedDeclaration": 2123,
+                "referencedDeclaration": 2143,
                 "src": "300:3:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_magic_message",
                   "typeString": "msg"
                 }
               },
-              "id": 2030,
+              "id": 2050,
               "isConstant": false,
               "isLValue": false,
               "isPure": false,
@@ -284,10 +284,10 @@
           },
           {
             "constant": false,
-            "id": 2035,
+            "id": 2055,
             "name": "validators",
             "nodeType": "VariableDeclaration",
-            "scope": 2108,
+            "scope": 2128,
             "src": "316:42:4",
             "stateVariable": true,
             "storageLocation": "default",
@@ -296,9 +296,9 @@
               "typeString": "mapping(address => bool)"
             },
             "typeName": {
-              "id": 2034,
+              "id": 2054,
               "keyType": {
-                "id": 2032,
+                "id": 2052,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "324:7:4",
@@ -314,7 +314,7 @@
                 "typeString": "mapping(address => bool)"
               },
               "valueType": {
-                "id": 2033,
+                "id": 2053,
                 "name": "bool",
                 "nodeType": "ElementaryTypeName",
                 "src": "335:4:4",
@@ -329,7 +329,7 @@
           },
           {
             "body": {
-              "id": 2046,
+              "id": 2066,
               "nodeType": "Block",
               "src": "479:103:4",
               "statements": [
@@ -343,18 +343,18 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 2041,
+                        "id": 2061,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 2038,
+                          "id": 2058,
                           "name": "_owner",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2031,
+                          "referencedDeclaration": 2051,
                           "src": "497:6:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -367,18 +367,18 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 2039,
+                            "id": 2059,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2123,
+                            "referencedDeclaration": 2143,
                             "src": "507:3:4",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
                               "typeString": "msg"
                             }
                           },
-                          "id": 2040,
+                          "id": 2060,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -401,7 +401,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "4f6e6c7920636f6e7472616374206f776e65722063616e2063616c6c20746869732066756e6374696f6e",
-                        "id": 2042,
+                        "id": 2062,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -428,21 +428,21 @@
                           "typeString": "literal_string \"Only contract owner can call this function\""
                         }
                       ],
-                      "id": 2037,
+                      "id": 2057,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2126,
-                        2127
+                        2146,
+                        2147
                       ],
-                      "referencedDeclaration": 2127,
+                      "referencedDeclaration": 2147,
                       "src": "489:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 2043,
+                    "id": 2063,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -456,23 +456,23 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 2044,
+                  "id": 2064,
                   "nodeType": "ExpressionStatement",
                   "src": "489:75:4"
                 },
                 {
-                  "id": 2045,
+                  "id": 2065,
                   "nodeType": "PlaceholderStatement",
                   "src": "574:1:4"
                 }
               ]
             },
             "documentation": "@dev Modifier to restrict access to only the contract owner.",
-            "id": 2047,
+            "id": 2067,
             "name": "onlyContractOwner",
             "nodeType": "ModifierDefinition",
             "parameters": {
-              "id": 2036,
+              "id": 2056,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "476:2:4"
@@ -482,7 +482,7 @@
           },
           {
             "body": {
-              "id": 2058,
+              "id": 2078,
               "nodeType": "Block",
               "src": "690:100:4",
               "statements": [
@@ -494,34 +494,34 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 2050,
+                          "id": 2070,
                           "name": "validators",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2035,
+                          "referencedDeclaration": 2055,
                           "src": "708:10:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
                             "typeString": "mapping(address => bool)"
                           }
                         },
-                        "id": 2053,
+                        "id": 2073,
                         "indexExpression": {
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 2051,
+                            "id": 2071,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2123,
+                            "referencedDeclaration": 2143,
                             "src": "719:3:4",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
                               "typeString": "msg"
                             }
                           },
-                          "id": 2052,
+                          "id": 2072,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -549,7 +549,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "4f6e6c792076616c696461746f722063616e2063616c6c20746869732066756e6374696f6e",
-                        "id": 2054,
+                        "id": 2074,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -576,21 +576,21 @@
                           "typeString": "literal_string \"Only validator can call this function\""
                         }
                       ],
-                      "id": 2049,
+                      "id": 2069,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2126,
-                        2127
+                        2146,
+                        2147
                       ],
-                      "referencedDeclaration": 2127,
+                      "referencedDeclaration": 2147,
                       "src": "700:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 2055,
+                    "id": 2075,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -604,23 +604,23 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 2056,
+                  "id": 2076,
                   "nodeType": "ExpressionStatement",
                   "src": "700:72:4"
                 },
                 {
-                  "id": 2057,
+                  "id": 2077,
                   "nodeType": "PlaceholderStatement",
                   "src": "782:1:4"
                 }
               ]
             },
             "documentation": "@dev Modifier to restrict access to only validators.",
-            "id": 2059,
+            "id": 2079,
             "name": "onlyValidator",
             "nodeType": "ModifierDefinition",
             "parameters": {
-              "id": 2048,
+              "id": 2068,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "687:2:4"
@@ -630,14 +630,14 @@
           },
           {
             "body": {
-              "id": 2076,
+              "id": 2096,
               "nodeType": "Block",
               "src": "999:87:4",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 2070,
+                    "id": 2090,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -646,25 +646,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 2066,
+                        "id": 2086,
                         "name": "validators",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2035,
+                        "referencedDeclaration": 2055,
                         "src": "1009:10:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
                           "typeString": "mapping(address => bool)"
                         }
                       },
-                      "id": 2068,
+                      "id": 2088,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 2067,
+                        "id": 2087,
                         "name": "_validator",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2061,
+                        "referencedDeclaration": 2081,
                         "src": "1020:10:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -687,7 +687,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "74727565",
-                      "id": 2069,
+                      "id": 2089,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -708,7 +708,7 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 2071,
+                  "id": 2091,
                   "nodeType": "ExpressionStatement",
                   "src": "1009:29:4"
                 },
@@ -718,11 +718,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 2073,
+                        "id": 2093,
                         "name": "_validator",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2061,
+                        "referencedDeclaration": 2081,
                         "src": "1068:10:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -737,18 +737,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 2072,
+                      "id": 2092,
                       "name": "ValidatorAdded",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 2023,
+                      "referencedDeclaration": 2043,
                       "src": "1053:14:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 2074,
+                    "id": 2094,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -762,27 +762,27 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 2075,
+                  "id": 2095,
                   "nodeType": "EmitStatement",
                   "src": "1048:31:4"
                 }
               ]
             },
             "documentation": "@dev Adds a new validator to the registry.\n@param _validator The address of the validator to be added.",
-            "id": 2077,
+            "id": 2097,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": [],
-                "id": 2064,
+                "id": 2084,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 2063,
+                  "id": 2083,
                   "name": "onlyContractOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 2047,
+                  "referencedDeclaration": 2067,
                   "src": "979:17:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -796,15 +796,15 @@
             "name": "addValidator",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 2062,
+              "id": 2082,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 2061,
+                  "id": 2081,
                   "name": "_validator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 2077,
+                  "scope": 2097,
                   "src": "952:18:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -813,7 +813,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 2060,
+                    "id": 2080,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "952:7:4",
@@ -830,12 +830,12 @@
               "src": "951:20:4"
             },
             "returnParameters": {
-              "id": 2065,
+              "id": 2085,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "999:0:4"
             },
-            "scope": 2108,
+            "scope": 2128,
             "src": "930:156:4",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -843,14 +843,14 @@
           },
           {
             "body": {
-              "id": 2094,
+              "id": 2114,
               "nodeType": "Block",
               "src": "1301:90:4",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 2088,
+                    "id": 2108,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -859,25 +859,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 2084,
+                        "id": 2104,
                         "name": "validators",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2035,
+                        "referencedDeclaration": 2055,
                         "src": "1311:10:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
                           "typeString": "mapping(address => bool)"
                         }
                       },
-                      "id": 2086,
+                      "id": 2106,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 2085,
+                        "id": 2105,
                         "name": "_validator",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2079,
+                        "referencedDeclaration": 2099,
                         "src": "1322:10:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -900,7 +900,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "66616c7365",
-                      "id": 2087,
+                      "id": 2107,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -921,7 +921,7 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 2089,
+                  "id": 2109,
                   "nodeType": "ExpressionStatement",
                   "src": "1311:30:4"
                 },
@@ -931,11 +931,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 2091,
+                        "id": 2111,
                         "name": "_validator",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2079,
+                        "referencedDeclaration": 2099,
                         "src": "1373:10:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -950,18 +950,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 2090,
+                      "id": 2110,
                       "name": "ValidatorRemoved",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 2027,
+                      "referencedDeclaration": 2047,
                       "src": "1356:16:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 2092,
+                    "id": 2112,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -975,27 +975,27 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 2093,
+                  "id": 2113,
                   "nodeType": "EmitStatement",
                   "src": "1351:33:4"
                 }
               ]
             },
             "documentation": "@dev Removes a validator from the registry.\n@param _validator The address of the validator to be removed.",
-            "id": 2095,
+            "id": 2115,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": [],
-                "id": 2082,
+                "id": 2102,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 2081,
+                  "id": 2101,
                   "name": "onlyContractOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 2047,
+                  "referencedDeclaration": 2067,
                   "src": "1281:17:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -1009,15 +1009,15 @@
             "name": "removeValidator",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 2080,
+              "id": 2100,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 2079,
+                  "id": 2099,
                   "name": "_validator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 2095,
+                  "scope": 2115,
                   "src": "1254:18:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1026,7 +1026,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 2078,
+                    "id": 2098,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1254:7:4",
@@ -1043,12 +1043,12 @@
               "src": "1253:20:4"
             },
             "returnParameters": {
-              "id": 2083,
+              "id": 2103,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1301:0:4"
             },
-            "scope": 2108,
+            "scope": 2128,
             "src": "1229:162:4",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1056,7 +1056,7 @@
           },
           {
             "body": {
-              "id": 2106,
+              "id": 2126,
               "nodeType": "Block",
               "src": "1655:46:4",
               "statements": [
@@ -1065,25 +1065,25 @@
                     "argumentTypes": null,
                     "baseExpression": {
                       "argumentTypes": null,
-                      "id": 2102,
+                      "id": 2122,
                       "name": "validators",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 2035,
+                      "referencedDeclaration": 2055,
                       "src": "1672:10:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
                         "typeString": "mapping(address => bool)"
                       }
                     },
-                    "id": 2104,
+                    "id": 2124,
                     "indexExpression": {
                       "argumentTypes": null,
-                      "id": 2103,
+                      "id": 2123,
                       "name": "_validator",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 2097,
+                      "referencedDeclaration": 2117,
                       "src": "1683:10:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -1101,30 +1101,30 @@
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 2101,
-                  "id": 2105,
+                  "functionReturnParameters": 2121,
+                  "id": 2125,
                   "nodeType": "Return",
                   "src": "1665:29:4"
                 }
               ]
             },
             "documentation": "@dev Checks if an address is a validator.\n@param _validator The address to be checked.\n@return A boolean indicating whether the address is a validator.",
-            "id": 2107,
+            "id": 2127,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "isValidator",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 2098,
+              "id": 2118,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 2097,
+                  "id": 2117,
                   "name": "_validator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 2107,
+                  "scope": 2127,
                   "src": "1608:18:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1133,7 +1133,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 2096,
+                    "id": 2116,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1608:7:4",
@@ -1150,15 +1150,15 @@
               "src": "1607:20:4"
             },
             "returnParameters": {
-              "id": 2101,
+              "id": 2121,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 2100,
+                  "id": 2120,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 2107,
+                  "scope": 2127,
                   "src": "1649:4:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1167,7 +1167,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 2099,
+                    "id": 2119,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "1649:4:4",
@@ -1182,14 +1182,14 @@
               ],
               "src": "1648:6:4"
             },
-            "scope": 2108,
+            "scope": 2128,
             "src": "1587:114:4",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 2109,
+        "scope": 2129,
         "src": "119:1584:4"
       }
     ],
@@ -1200,7 +1200,7 @@
       "absolutePath": "project:/contracts/ValidatorRegistry.sol",
       "exportedSymbols": {
         "ValidatorRegistry": [
-          2108
+          2128
         ]
       }
     },
@@ -1214,7 +1214,7 @@
             ".0"
           ]
         },
-        "id": 2019,
+        "id": 2039,
         "name": "PragmaDirective",
         "src": "0:23:4"
       },
@@ -1230,10 +1230,10 @@
           "documentation": "@title ValidatorRegistry\n@dev A contract for managing a registry of validators.",
           "fullyImplemented": true,
           "linearizedBaseContracts": [
-            2108
+            2128
           ],
           "name": "ValidatorRegistry",
-          "scope": 2109
+          "scope": 2129
         },
         "children": [
           {
@@ -1250,7 +1250,7 @@
                       "constant": false,
                       "indexed": false,
                       "name": "validator",
-                      "scope": 2023,
+                      "scope": 2043,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -1264,22 +1264,22 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 2020,
+                        "id": 2040,
                         "name": "ElementaryTypeName",
                         "src": "188:7:4"
                       }
                     ],
-                    "id": 2021,
+                    "id": 2041,
                     "name": "VariableDeclaration",
                     "src": "188:17:4"
                   }
                 ],
-                "id": 2022,
+                "id": 2042,
                 "name": "ParameterList",
                 "src": "187:19:4"
               }
             ],
-            "id": 2023,
+            "id": 2043,
             "name": "EventDefinition",
             "src": "167:40:4"
           },
@@ -1297,7 +1297,7 @@
                       "constant": false,
                       "indexed": false,
                       "name": "validator",
-                      "scope": 2027,
+                      "scope": 2047,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -1311,22 +1311,22 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 2024,
+                        "id": 2044,
                         "name": "ElementaryTypeName",
                         "src": "235:7:4"
                       }
                     ],
-                    "id": 2025,
+                    "id": 2045,
                     "name": "VariableDeclaration",
                     "src": "235:17:4"
                   }
                 ],
-                "id": 2026,
+                "id": 2046,
                 "name": "ParameterList",
                 "src": "234:19:4"
               }
             ],
-            "id": 2027,
+            "id": 2047,
             "name": "EventDefinition",
             "src": "212:42:4"
           },
@@ -1334,7 +1334,7 @@
             "attributes": {
               "constant": false,
               "name": "_owner",
-              "scope": 2108,
+              "scope": 2128,
               "stateVariable": true,
               "storageLocation": "default",
               "type": "address",
@@ -1347,7 +1347,7 @@
                   "stateMutability": "nonpayable",
                   "type": "address"
                 },
-                "id": 2028,
+                "id": 2048,
                 "name": "ElementaryTypeName",
                 "src": "283:7:4"
               },
@@ -1369,21 +1369,21 @@
                       "overloadedDeclarations": [
                         null
                       ],
-                      "referencedDeclaration": 2123,
+                      "referencedDeclaration": 2143,
                       "type": "msg",
                       "value": "msg"
                     },
-                    "id": 2029,
+                    "id": 2049,
                     "name": "Identifier",
                     "src": "300:3:4"
                   }
                 ],
-                "id": 2030,
+                "id": 2050,
                 "name": "MemberAccess",
                 "src": "300:10:4"
               }
             ],
-            "id": 2031,
+            "id": 2051,
             "name": "VariableDeclaration",
             "src": "283:27:4"
           },
@@ -1391,7 +1391,7 @@
             "attributes": {
               "constant": false,
               "name": "validators",
-              "scope": 2108,
+              "scope": 2128,
               "stateVariable": true,
               "storageLocation": "default",
               "type": "mapping(address => bool)",
@@ -1409,7 +1409,7 @@
                       "name": "address",
                       "type": "address"
                     },
-                    "id": 2032,
+                    "id": 2052,
                     "name": "ElementaryTypeName",
                     "src": "324:7:4"
                   },
@@ -1418,17 +1418,17 @@
                       "name": "bool",
                       "type": "bool"
                     },
-                    "id": 2033,
+                    "id": 2053,
                     "name": "ElementaryTypeName",
                     "src": "335:4:4"
                   }
                 ],
-                "id": 2034,
+                "id": 2054,
                 "name": "Mapping",
                 "src": "316:24:4"
               }
             ],
-            "id": 2035,
+            "id": 2055,
             "name": "VariableDeclaration",
             "src": "316:42:4"
           },
@@ -1446,7 +1446,7 @@
                   ]
                 },
                 "children": [],
-                "id": 2036,
+                "id": 2056,
                 "name": "ParameterList",
                 "src": "476:2:4"
               },
@@ -1482,14 +1482,14 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                2126,
-                                2127
+                                2146,
+                                2147
                               ],
-                              "referencedDeclaration": 2127,
+                              "referencedDeclaration": 2147,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
-                            "id": 2037,
+                            "id": 2057,
                             "name": "Identifier",
                             "src": "489:7:4"
                           },
@@ -1514,11 +1514,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 2031,
+                                  "referencedDeclaration": 2051,
                                   "type": "address",
                                   "value": "_owner"
                                 },
-                                "id": 2038,
+                                "id": 2058,
                                 "name": "Identifier",
                                 "src": "497:6:4"
                               },
@@ -1540,21 +1540,21 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 2123,
+                                      "referencedDeclaration": 2143,
                                       "type": "msg",
                                       "value": "msg"
                                     },
-                                    "id": 2039,
+                                    "id": 2059,
                                     "name": "Identifier",
                                     "src": "507:3:4"
                                   }
                                 ],
-                                "id": 2040,
+                                "id": 2060,
                                 "name": "MemberAccess",
                                 "src": "507:10:4"
                               }
                             ],
-                            "id": 2041,
+                            "id": 2061,
                             "name": "BinaryOperation",
                             "src": "497:20:4"
                           },
@@ -1571,32 +1571,32 @@
                               "type": "literal_string \"Only contract owner can call this function\"",
                               "value": "Only contract owner can call this function"
                             },
-                            "id": 2042,
+                            "id": 2062,
                             "name": "Literal",
                             "src": "519:44:4"
                           }
                         ],
-                        "id": 2043,
+                        "id": 2063,
                         "name": "FunctionCall",
                         "src": "489:75:4"
                       }
                     ],
-                    "id": 2044,
+                    "id": 2064,
                     "name": "ExpressionStatement",
                     "src": "489:75:4"
                   },
                   {
-                    "id": 2045,
+                    "id": 2065,
                     "name": "PlaceholderStatement",
                     "src": "574:1:4"
                   }
                 ],
-                "id": 2046,
+                "id": 2066,
                 "name": "Block",
                 "src": "479:103:4"
               }
             ],
-            "id": 2047,
+            "id": 2067,
             "name": "ModifierDefinition",
             "src": "450:132:4"
           },
@@ -1614,7 +1614,7 @@
                   ]
                 },
                 "children": [],
-                "id": 2048,
+                "id": 2068,
                 "name": "ParameterList",
                 "src": "687:2:4"
               },
@@ -1650,14 +1650,14 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                2126,
-                                2127
+                                2146,
+                                2147
                               ],
-                              "referencedDeclaration": 2127,
+                              "referencedDeclaration": 2147,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
-                            "id": 2049,
+                            "id": 2069,
                             "name": "Identifier",
                             "src": "700:7:4"
                           },
@@ -1677,11 +1677,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 2035,
+                                  "referencedDeclaration": 2055,
                                   "type": "mapping(address => bool)",
                                   "value": "validators"
                                 },
-                                "id": 2050,
+                                "id": 2070,
                                 "name": "Identifier",
                                 "src": "708:10:4"
                               },
@@ -1703,21 +1703,21 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 2123,
+                                      "referencedDeclaration": 2143,
                                       "type": "msg",
                                       "value": "msg"
                                     },
-                                    "id": 2051,
+                                    "id": 2071,
                                     "name": "Identifier",
                                     "src": "719:3:4"
                                   }
                                 ],
-                                "id": 2052,
+                                "id": 2072,
                                 "name": "MemberAccess",
                                 "src": "719:10:4"
                               }
                             ],
-                            "id": 2053,
+                            "id": 2073,
                             "name": "IndexAccess",
                             "src": "708:22:4"
                           },
@@ -1734,32 +1734,32 @@
                               "type": "literal_string \"Only validator can call this function\"",
                               "value": "Only validator can call this function"
                             },
-                            "id": 2054,
+                            "id": 2074,
                             "name": "Literal",
                             "src": "732:39:4"
                           }
                         ],
-                        "id": 2055,
+                        "id": 2075,
                         "name": "FunctionCall",
                         "src": "700:72:4"
                       }
                     ],
-                    "id": 2056,
+                    "id": 2076,
                     "name": "ExpressionStatement",
                     "src": "700:72:4"
                   },
                   {
-                    "id": 2057,
+                    "id": 2077,
                     "name": "PlaceholderStatement",
                     "src": "782:1:4"
                   }
                 ],
-                "id": 2058,
+                "id": 2078,
                 "name": "Block",
                 "src": "690:100:4"
               }
             ],
-            "id": 2059,
+            "id": 2079,
             "name": "ModifierDefinition",
             "src": "665:125:4"
           },
@@ -1770,7 +1770,7 @@
               "isConstructor": false,
               "kind": "function",
               "name": "addValidator",
-              "scope": 2108,
+              "scope": 2128,
               "stateMutability": "nonpayable",
               "superFunction": null,
               "visibility": "public"
@@ -1782,7 +1782,7 @@
                     "attributes": {
                       "constant": false,
                       "name": "_validator",
-                      "scope": 2077,
+                      "scope": 2097,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -1796,17 +1796,17 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 2060,
+                        "id": 2080,
                         "name": "ElementaryTypeName",
                         "src": "952:7:4"
                       }
                     ],
-                    "id": 2061,
+                    "id": 2081,
                     "name": "VariableDeclaration",
                     "src": "952:18:4"
                   }
                 ],
-                "id": 2062,
+                "id": 2082,
                 "name": "ParameterList",
                 "src": "951:20:4"
               },
@@ -1817,7 +1817,7 @@
                   ]
                 },
                 "children": [],
-                "id": 2065,
+                "id": 2085,
                 "name": "ParameterList",
                 "src": "999:0:4"
               },
@@ -1834,16 +1834,16 @@
                       "overloadedDeclarations": [
                         null
                       ],
-                      "referencedDeclaration": 2047,
+                      "referencedDeclaration": 2067,
                       "type": "modifier ()",
                       "value": "onlyContractOwner"
                     },
-                    "id": 2063,
+                    "id": 2083,
                     "name": "Identifier",
                     "src": "979:17:4"
                   }
                 ],
-                "id": 2064,
+                "id": 2084,
                 "name": "ModifierInvocation",
                 "src": "979:19:4"
               },
@@ -1878,11 +1878,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 2035,
+                                  "referencedDeclaration": 2055,
                                   "type": "mapping(address => bool)",
                                   "value": "validators"
                                 },
-                                "id": 2066,
+                                "id": 2086,
                                 "name": "Identifier",
                                 "src": "1009:10:4"
                               },
@@ -1892,16 +1892,16 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 2061,
+                                  "referencedDeclaration": 2081,
                                   "type": "address",
                                   "value": "_validator"
                                 },
-                                "id": 2067,
+                                "id": 2087,
                                 "name": "Identifier",
                                 "src": "1020:10:4"
                               }
                             ],
-                            "id": 2068,
+                            "id": 2088,
                             "name": "IndexAccess",
                             "src": "1009:22:4"
                           },
@@ -1918,17 +1918,17 @@
                               "type": "bool",
                               "value": "true"
                             },
-                            "id": 2069,
+                            "id": 2089,
                             "name": "Literal",
                             "src": "1034:4:4"
                           }
                         ],
-                        "id": 2070,
+                        "id": 2090,
                         "name": "Assignment",
                         "src": "1009:29:4"
                       }
                     ],
-                    "id": 2071,
+                    "id": 2091,
                     "name": "ExpressionStatement",
                     "src": "1009:29:4"
                   },
@@ -1960,11 +1960,11 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2023,
+                              "referencedDeclaration": 2043,
                               "type": "function (address)",
                               "value": "ValidatorAdded"
                             },
-                            "id": 2072,
+                            "id": 2092,
                             "name": "Identifier",
                             "src": "1053:14:4"
                           },
@@ -1974,31 +1974,31 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2061,
+                              "referencedDeclaration": 2081,
                               "type": "address",
                               "value": "_validator"
                             },
-                            "id": 2073,
+                            "id": 2093,
                             "name": "Identifier",
                             "src": "1068:10:4"
                           }
                         ],
-                        "id": 2074,
+                        "id": 2094,
                         "name": "FunctionCall",
                         "src": "1053:26:4"
                       }
                     ],
-                    "id": 2075,
+                    "id": 2095,
                     "name": "EmitStatement",
                     "src": "1048:31:4"
                   }
                 ],
-                "id": 2076,
+                "id": 2096,
                 "name": "Block",
                 "src": "999:87:4"
               }
             ],
-            "id": 2077,
+            "id": 2097,
             "name": "FunctionDefinition",
             "src": "930:156:4"
           },
@@ -2009,7 +2009,7 @@
               "isConstructor": false,
               "kind": "function",
               "name": "removeValidator",
-              "scope": 2108,
+              "scope": 2128,
               "stateMutability": "nonpayable",
               "superFunction": null,
               "visibility": "public"
@@ -2021,7 +2021,7 @@
                     "attributes": {
                       "constant": false,
                       "name": "_validator",
-                      "scope": 2095,
+                      "scope": 2115,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -2035,17 +2035,17 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 2078,
+                        "id": 2098,
                         "name": "ElementaryTypeName",
                         "src": "1254:7:4"
                       }
                     ],
-                    "id": 2079,
+                    "id": 2099,
                     "name": "VariableDeclaration",
                     "src": "1254:18:4"
                   }
                 ],
-                "id": 2080,
+                "id": 2100,
                 "name": "ParameterList",
                 "src": "1253:20:4"
               },
@@ -2056,7 +2056,7 @@
                   ]
                 },
                 "children": [],
-                "id": 2083,
+                "id": 2103,
                 "name": "ParameterList",
                 "src": "1301:0:4"
               },
@@ -2073,16 +2073,16 @@
                       "overloadedDeclarations": [
                         null
                       ],
-                      "referencedDeclaration": 2047,
+                      "referencedDeclaration": 2067,
                       "type": "modifier ()",
                       "value": "onlyContractOwner"
                     },
-                    "id": 2081,
+                    "id": 2101,
                     "name": "Identifier",
                     "src": "1281:17:4"
                   }
                 ],
-                "id": 2082,
+                "id": 2102,
                 "name": "ModifierInvocation",
                 "src": "1281:19:4"
               },
@@ -2117,11 +2117,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 2035,
+                                  "referencedDeclaration": 2055,
                                   "type": "mapping(address => bool)",
                                   "value": "validators"
                                 },
-                                "id": 2084,
+                                "id": 2104,
                                 "name": "Identifier",
                                 "src": "1311:10:4"
                               },
@@ -2131,16 +2131,16 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 2079,
+                                  "referencedDeclaration": 2099,
                                   "type": "address",
                                   "value": "_validator"
                                 },
-                                "id": 2085,
+                                "id": 2105,
                                 "name": "Identifier",
                                 "src": "1322:10:4"
                               }
                             ],
-                            "id": 2086,
+                            "id": 2106,
                             "name": "IndexAccess",
                             "src": "1311:22:4"
                           },
@@ -2157,17 +2157,17 @@
                               "type": "bool",
                               "value": "false"
                             },
-                            "id": 2087,
+                            "id": 2107,
                             "name": "Literal",
                             "src": "1336:5:4"
                           }
                         ],
-                        "id": 2088,
+                        "id": 2108,
                         "name": "Assignment",
                         "src": "1311:30:4"
                       }
                     ],
-                    "id": 2089,
+                    "id": 2109,
                     "name": "ExpressionStatement",
                     "src": "1311:30:4"
                   },
@@ -2199,11 +2199,11 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2027,
+                              "referencedDeclaration": 2047,
                               "type": "function (address)",
                               "value": "ValidatorRemoved"
                             },
-                            "id": 2090,
+                            "id": 2110,
                             "name": "Identifier",
                             "src": "1356:16:4"
                           },
@@ -2213,31 +2213,31 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2079,
+                              "referencedDeclaration": 2099,
                               "type": "address",
                               "value": "_validator"
                             },
-                            "id": 2091,
+                            "id": 2111,
                             "name": "Identifier",
                             "src": "1373:10:4"
                           }
                         ],
-                        "id": 2092,
+                        "id": 2112,
                         "name": "FunctionCall",
                         "src": "1356:28:4"
                       }
                     ],
-                    "id": 2093,
+                    "id": 2113,
                     "name": "EmitStatement",
                     "src": "1351:33:4"
                   }
                 ],
-                "id": 2094,
+                "id": 2114,
                 "name": "Block",
                 "src": "1301:90:4"
               }
             ],
-            "id": 2095,
+            "id": 2115,
             "name": "FunctionDefinition",
             "src": "1229:162:4"
           },
@@ -2251,7 +2251,7 @@
                 null
               ],
               "name": "isValidator",
-              "scope": 2108,
+              "scope": 2128,
               "stateMutability": "view",
               "superFunction": null,
               "visibility": "public"
@@ -2263,7 +2263,7 @@
                     "attributes": {
                       "constant": false,
                       "name": "_validator",
-                      "scope": 2107,
+                      "scope": 2127,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -2277,17 +2277,17 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 2096,
+                        "id": 2116,
                         "name": "ElementaryTypeName",
                         "src": "1608:7:4"
                       }
                     ],
-                    "id": 2097,
+                    "id": 2117,
                     "name": "VariableDeclaration",
                     "src": "1608:18:4"
                   }
                 ],
-                "id": 2098,
+                "id": 2118,
                 "name": "ParameterList",
                 "src": "1607:20:4"
               },
@@ -2297,7 +2297,7 @@
                     "attributes": {
                       "constant": false,
                       "name": "",
-                      "scope": 2107,
+                      "scope": 2127,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "bool",
@@ -2310,17 +2310,17 @@
                           "name": "bool",
                           "type": "bool"
                         },
-                        "id": 2099,
+                        "id": 2119,
                         "name": "ElementaryTypeName",
                         "src": "1649:4:4"
                       }
                     ],
-                    "id": 2100,
+                    "id": 2120,
                     "name": "VariableDeclaration",
                     "src": "1649:4:4"
                   }
                 ],
-                "id": 2101,
+                "id": 2121,
                 "name": "ParameterList",
                 "src": "1648:6:4"
               },
@@ -2328,7 +2328,7 @@
                 "children": [
                   {
                     "attributes": {
-                      "functionReturnParameters": 2101
+                      "functionReturnParameters": 2121
                     },
                     "children": [
                       {
@@ -2347,11 +2347,11 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2035,
+                              "referencedDeclaration": 2055,
                               "type": "mapping(address => bool)",
                               "value": "validators"
                             },
-                            "id": 2102,
+                            "id": 2122,
                             "name": "Identifier",
                             "src": "1672:10:4"
                           },
@@ -2361,41 +2361,41 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2097,
+                              "referencedDeclaration": 2117,
                               "type": "address",
                               "value": "_validator"
                             },
-                            "id": 2103,
+                            "id": 2123,
                             "name": "Identifier",
                             "src": "1683:10:4"
                           }
                         ],
-                        "id": 2104,
+                        "id": 2124,
                         "name": "IndexAccess",
                         "src": "1672:22:4"
                       }
                     ],
-                    "id": 2105,
+                    "id": 2125,
                     "name": "Return",
                     "src": "1665:29:4"
                   }
                 ],
-                "id": 2106,
+                "id": 2126,
                 "name": "Block",
                 "src": "1655:46:4"
               }
             ],
-            "id": 2107,
+            "id": 2127,
             "name": "FunctionDefinition",
             "src": "1587:114:4"
           }
         ],
-        "id": 2108,
+        "id": 2128,
         "name": "ContractDefinition",
         "src": "119:1584:4"
       }
     ],
-    "id": 2109,
+    "id": 2129,
     "name": "SourceUnit",
     "src": "0:1704:4"
   },
@@ -2412,7 +2412,7 @@
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2024-04-20T15:17:22.760Z",
+  "updatedAt": "2024-04-21T03:02:25.667Z",
   "devdoc": {
     "details": "A contract for managing a registry of validators.",
     "methods": {
