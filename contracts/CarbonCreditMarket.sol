@@ -147,6 +147,9 @@ contract CarbonCreditMarket {
                 returnPenalty + companyInstance.getCCTSold(projectId)
             ); // Return penalty amount and profit back to seller
         }
+
+        companyInstance.setCCTListed(projectId, 0);
+        companyInstance.setCCTSold(projectId, 0);
     }
 
     /**

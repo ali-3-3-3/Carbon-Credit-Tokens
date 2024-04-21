@@ -301,6 +301,16 @@ contract Company {
         // projects[projectId].cctAmount += cctAmt; //cctAmount equals cctListed when listed
     }
 
+     /**
+     * @dev Sets the amount of listed CCT for a project.
+     * @param projectId The ID of the project.
+     * @param cctAmt The amount of CCT to set.
+     */
+    function setCCTListed(uint256 projectId, uint256 cctAmt) public {
+        require(projectId < numProjects, "Invalid project ID");
+        projects[projectId].cctListed = cctAmt;
+    }
+
     /**
      * @dev Returns the details of a specific project.
      * @param projectId The ID of the project.
@@ -332,6 +342,16 @@ contract Company {
     function getCCTSold(uint256 projectId) public view returns (uint256) {
         require(projectId < numProjects, "Invalid project ID");
         return projects[projectId].cctSold;
+    }
+
+     /**
+     * @dev Sets the amount of sold CCT for a project.
+     * @param projectId The ID of the project.
+     * @param cctAmt The amount of CCT to set.
+     */
+    function setCCTSold(uint256 projectId, uint256 cctAmt) public {
+        require(projectId < numProjects, "Invalid project ID");
+        projects[projectId].cctSold = cctAmt;
     }
 
     /**
