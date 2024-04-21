@@ -301,7 +301,7 @@ contract Company {
         // projects[projectId].cctAmount += cctAmt; //cctAmount equals cctListed when listed
     }
 
-     /**
+    /**
      * @dev Sets the amount of listed CCT for a project.
      * @param projectId The ID of the project.
      * @param cctAmt The amount of CCT to set.
@@ -344,7 +344,7 @@ contract Company {
         return projects[projectId].cctSold;
     }
 
-     /**
+    /**
      * @dev Sets the amount of sold CCT for a project.
      * @param projectId The ID of the project.
      * @param cctAmt The amount of CCT to set.

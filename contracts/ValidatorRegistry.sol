@@ -5,7 +5,6 @@ pragma solidity ^0.5.0;
  * @dev A contract for managing a registry of validators.
  */
 contract ValidatorRegistry {
-
     // Events
     event ValidatorAdded(address validator);
     event ValidatorRemoved(address validator);
@@ -14,44 +13,45 @@ contract ValidatorRegistry {
     address _owner = msg.sender;
     mapping(address => bool) public validators;
 
-
     /**
      * @dev Modifier to restrict access to only the contract owner.
      */
     modifier onlyContractOwner() {
-        require(_owner == msg.sender, "Only contract owner can call this function");
+        require(
+            _owner == msg.sender,
+            "Only contract owner can call this function"
+        );
         _;
     }
-
 
     /**
      * @dev Modifier to restrict access to only validators.
      */
     modifier onlyValidator() {
-        require(validators[msg.sender], "Only validator can call this function");
+        require(
+            validators[msg.sender],
+            "Only validator can call this function"
+        );
         _;
     }
-
 
     /**
      * @dev Adds a new validator to the registry.
      * @param _validator The address of the validator to be added.
      */
-    function addValidator(address _validator) public onlyContractOwner() {
+    function addValidator(address _validator) public onlyContractOwner {
         validators[_validator] = true;
         emit ValidatorAdded(_validator);
     }
-
 
     /**
      * @dev Removes a validator from the registry.
      * @param _validator The address of the validator to be removed.
      */
-    function removeValidator(address _validator) public onlyContractOwner() {
+    function removeValidator(address _validator) public onlyContractOwner {
         validators[_validator] = false;
         emit ValidatorRemoved(_validator);
     }
-
 
     /**
      * @dev Checks if an address is a validator.

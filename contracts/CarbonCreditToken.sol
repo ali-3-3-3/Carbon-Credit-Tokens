@@ -2,16 +2,13 @@ pragma solidity ^0.5.0;
 
 import "./ERC20.sol";
 
-
 /**
  * @title CarbonCreditToken
  * @dev A token contract representing Carbon Credit Tokens.
  */
 contract CarbonCreditToken {
-
     // Events
     event CCTMinted(address recipient, uint256 amt);
-
 
     // State variables
     ERC20 erc20Contract;
@@ -21,8 +18,7 @@ contract CarbonCreditToken {
         ERC20 e = new ERC20();
         erc20Contract = e;
         owner = msg.sender;
-    } 
-
+    }
 
     /**
      * @dev Function to mint Carbon Credit Tokens (CCT) to the recipient.
@@ -41,17 +37,15 @@ contract CarbonCreditToken {
         return amtOfCCT;
     }
 
-
     /**
      * @dev Function to check the credit of the owner
      * @param ad address of the owner
      * @return uint256 credit of the owner
-     */    
+     */
     function checkCCT(address ad) public view returns (uint256) {
         uint256 credit = erc20Contract.balanceOf(ad);
         return credit;
     }
-
 
     /**
      * @dev Function to transfer CCT from the owner to the recipient
@@ -62,7 +56,6 @@ contract CarbonCreditToken {
         // Transfers from tx.origin to receipient
         erc20Contract.transfer(recipient, amt);
     }
-
 
     /**
      * @dev Function to transfer CCT from the owner to the recipient
@@ -78,7 +71,6 @@ contract CarbonCreditToken {
         // Transfers from tx.origin to receipient
         erc20Contract.transferFrom(sender, recipient, amt);
     }
-
 
     /**
      * @dev Function to destroy CCT
