@@ -25,7 +25,6 @@ contract CarbonCreditMarket {
     Company companyInstance;
     uint256 cctBank = 0;
     address _owner = msg.sender;
-    mapping(address => bool) public isVerifier;
     mapping(address => bool) public isSeller;
     mapping(address => uint256[]) public companyProjects; // Mapping of company address to list of projects
     mapping(uint256 => address[]) public projectBuyers; // Mapping of project id to list of buyers
@@ -205,7 +204,7 @@ contract CarbonCreditMarket {
                 companyInstance.getCCTSold(projectId)
             ); // Transfer profits to company, penalty kept by market
         } else {
-            companyInstance.setProjectcctAmount(projectId, 0); // Update project's CCT amount to 0 as all CCT sold 
+            companyInstance.setProjectcctAmount(projectId, 0); // Update project's CCT amount to 0 as all CCT sold
             withdrawEther(companyAddress, actualCCT); // Transfer profits to company (only got profits from the actual cct sold), penalty kept by market
         }
     }
