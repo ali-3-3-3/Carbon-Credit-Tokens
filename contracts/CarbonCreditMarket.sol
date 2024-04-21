@@ -72,16 +72,6 @@ contract CarbonCreditMarket {
      * @notice Only the contract owner can call this function.
      * @dev Throws an error if the specified amount is greater than the contract balance.
      */
-    // function withdrawEther(
-    //     address payable companyAddress,
-    //     uint256 amount
-    // ) public onlyOwner {
-    //     require(
-    //         amount <= address(this).balance,
-    //         "Insufficient contract balance"
-    //     );
-    //     companyAddress.transfer(amount);
-    // }
     function withdrawEther(
         address payable companyAddress,
         uint256 amount
@@ -144,11 +134,9 @@ contract CarbonCreditMarket {
                 projectStakes[buyer][projectId] = 0; // Reset buyer's stake to 0
             }
             // Project's CCTAmount left is returned to project
-            uint256 cctAmountUnsold = companyInstance.getProjectcctAmount(
-                projectId
-            );
+            uint256 cctAmountUnsold = actualCCT -
+                companyInstance.getCCTSold(projectId);
             companyInstance.setProjectcctAmount(projectId, cctAmountUnsold); // Update project's CCT amount, project can be resold with remaining CCT by seller
-            carbonCreditTokenInstance.getCCT(companyAddress, cctAmountUnsold); // Mint CCT to company for reselling
             // Return penalty + profit to seller
             uint256 stakedCredits = companyInstance.getStakedCredits( // Get staked credits (sellers stake 130% (of ether)) for the project
                     companyAddress,
@@ -157,7 +145,7 @@ contract CarbonCreditMarket {
             uint256 returnPenalty = (stakedCredits * 3) / 1000; // Calculate penalty amount to return to seller
             withdrawEther(
                 companyAddress,
-                (returnPenalty + companyInstance.getCCTSold(projectId))
+                returnPenalty + companyInstance.getCCTSold(projectId)
             ); // Return penalty amount and profit back to seller
         }
     }
@@ -217,6 +205,7 @@ contract CarbonCreditMarket {
                 companyInstance.getCCTSold(projectId)
             ); // Transfer profits to company, penalty kept by market
         } else {
+            companyInstance.setProjectcctAmount(projectId, 0); // Update project's CCT amount to 0 as all CCT sold 
             withdrawEther(companyAddress, actualCCT); // Transfer profits to company (only got profits from the actual cct sold), penalty kept by market
         }
     }
