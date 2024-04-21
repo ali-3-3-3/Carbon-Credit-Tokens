@@ -72,7 +72,16 @@ contract CarbonCreditMarket {
      * @notice Only the contract owner can call this function.
      * @dev Throws an error if the specified amount is greater than the contract balance.
      */
-
+    // function withdrawEther(
+    //     address payable companyAddress,
+    //     uint256 amount
+    // ) public onlyOwner {
+    //     require(
+    //         amount <= address(this).balance,
+    //         "Insufficient contract balance"
+    //     );
+    //     companyAddress.transfer(amount);
+    // }
         function withdrawEther(
         address payable companyAddress,
         uint256 amount
@@ -184,23 +193,18 @@ contract CarbonCreditMarket {
                 carbonCreditTokenInstance.getCCT(buyer, buyerStake); // Mint actual CCT to buyer, penalty and profits kept by market
                 actualCCT -= buyerStake; // Reduce actual CCT by buyer's stake
                 companyInstance.setProjectcctAmount(projectId, actualCCT); // Update project's CCT amount, project can be resold with remaining CCT by seller
-                withdrawEther(
-                companyAddress,
-                companyInstance.getCCTSold(projectId)
-                ); // Transfer profits to company, penalty kept by market
             } else {
                 // If actual CCT is less than CCT sold
                 uint256 actualBuyerCCT = (buyerStake * actualCCT) /
-                    companyInstance.getCCTSold(projectId); // Calculate actual CCT received by the buyer, based on proportion
+                    companyInstance.getCCTSold(projectId); // Calculate actual CCT received by the buyer
                 carbonCreditTokenInstance.getCCT(buyer, actualBuyerCCT); // Mint actual CCT to buyer
                 uint256 buyerCompensation = buyerStake - actualBuyerCCT; // Calculate compensation amount to buyer
                 withdrawEther(buyerPayable, buyerCompensation); // Transfer compensation amount to buyer
-                withdrawEther(
-                companyAddress,
-                actualCCT
-                ); // Transfer profits to company (only got profits from the actual cct sold), penalty kept by market
             }
-           
+            withdrawEther(
+                companyAddress,
+                companyInstance.getCCTSold(projectId)
+            ); // Transfer profits to company, penalty kept by market
             projectStakes[buyer][projectId] = 0; // Reset buyer's stake to 0
         }
     }
@@ -325,13 +329,7 @@ contract CarbonCreditMarket {
             emit BuyCredit(msg.sender, _cctAmount);
         }
     }
-
-    /**
- * @dev Returns the list of buyer addresses for a specific project.
- * @param projectId The ID of the project.
- * @return An array of addresses who are buyers of the project.
- */
-function getProjectBuyers(uint256 projectId) public view returns (address[] memory) {
+    function getProjectBuyers(uint256 projectId) public view returns (address[] memory) {
     return projectBuyers[projectId];
 }
 }
