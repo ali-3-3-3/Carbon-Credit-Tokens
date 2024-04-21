@@ -89,6 +89,11 @@ contract("CarbonCreditMarket", function (accounts) {
       3,
       "CCT should be listed for sale correctly"
     );
+    const project = await carbonCreditMarketInstance.companyProjects(
+      companyAddress,
+      0
+    ); // here 0 means accessing the projectId from the list of projects listed by the company
+    assert(project.toNumber() === 0, "Project not found");
   });
 
   it("Buying CCT from a project should update cctSold and emit BuyCredit event", async () => {
