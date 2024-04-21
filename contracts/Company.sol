@@ -312,9 +312,9 @@ contract Company {
     }
 
     /**
-     * @dev Returns the details of a specific project.
+     * @dev Returns the cctAmount of a specific project.
      * @param projectId The ID of the project.
-     * @return The details of the project.
+     * @return The cctAmount of the project.
      */
     function getProjectcctAmount(
         uint256 projectId
