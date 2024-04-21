@@ -53,7 +53,7 @@ contract Company {
         _;
     }
 /**
-     * @dev Checks that the company's details exposed can only be called by the company address aka the company itself
+     * @dev Checks that the calling address is the company itself trying to access its own information.
      * @param companyAddress The address of the company.
      * @return A boolean indicating whether the company has rights to view the company requested. (must be itself)
      */
@@ -308,7 +308,7 @@ contract Company {
     ) public view returns (uint256) {
         require(projectId < numProjects, "Invalid project ID");
         Project memory project = projects[projectId];
-        return project.cctAmount;
+        return project.cctAmount - project.cctSold;
     }
 
     /**

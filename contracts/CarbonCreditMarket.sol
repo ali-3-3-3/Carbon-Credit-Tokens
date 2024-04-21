@@ -183,18 +183,23 @@ contract CarbonCreditMarket {
                 carbonCreditTokenInstance.getCCT(buyer, buyerStake); // Mint actual CCT to buyer, penalty and profits kept by market
                 actualCCT -= buyerStake; // Reduce actual CCT by buyer's stake
                 companyInstance.setProjectcctAmount(projectId, actualCCT); // Update project's CCT amount, project can be resold with remaining CCT by seller
+                withdrawEther(
+                companyAddress,
+                companyInstance.getCCTSold(projectId)
+                ); // Transfer profits to company, penalty kept by market
             } else {
                 // If actual CCT is less than CCT sold
                 uint256 actualBuyerCCT = (buyerStake * actualCCT) /
-                    companyInstance.getCCTSold(projectId); // Calculate actual CCT received by the buyer
+                    companyInstance.getCCTSold(projectId); // Calculate actual CCT received by the buyer, based on proportion
                 carbonCreditTokenInstance.getCCT(buyer, actualBuyerCCT); // Mint actual CCT to buyer
                 uint256 buyerCompensation = buyerStake - actualBuyerCCT; // Calculate compensation amount to buyer
                 withdrawEther(buyerPayable, buyerCompensation); // Transfer compensation amount to buyer
-            }
-            withdrawEther(
+                withdrawEther(
                 companyAddress,
-                companyInstance.getCCTSold(projectId)
-            ); // Transfer profits to company, penalty kept by market
+                actualCCT
+                ); // Transfer profits to company (only got profits from the actual cct sold), penalty kept by market
+            }
+           
             projectStakes[buyer][projectId] = 0; // Reset buyer's stake to 0
         }
     }
