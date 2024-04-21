@@ -138,38 +138,40 @@ it("Should revert when attempting to validate a project that is already complete
   }
 });
 
-// it("Should correctly handle excess CCT upon successful project validation", async () => {
-//   const projectIndex = await companyInstance.numProjects(); // Get the current number of projects
-//   const listedCCT = 10;
-//   const soldCCT = 5;
-//   const actualCCT = 15; // Actual CCT is greater than what was sold
+it("Should correctly handle excess CCT upon successful project validation", async () => {
+  const projectIndex = await companyInstance.numProjects(); // Get the current number of projects
+  const listedCCT = 10;
+  const soldCCT = 5;
+  const actualCCT = 15; // Actual CCT is greater than what was sold
 
-//   // Add a project
-//   await companyInstance.addProject("Excess CCT Project", "Handling excess CCT", 500, listedCCT, { from: companyAddress });
+  // Add a project
+  await companyInstance.addProject("Excess CCT Project", "Handling excess CCT", 500, listedCCT, { from: companyAddress });
 
-//   const newProjectIndex = await companyInstance.numProjects(); // Verify new project index
-//   assert(newProjectIndex.sub(projectIndex).eq(web3.utils.toBN(1)), "One new project should be added");
+  const newProjectIndex = await companyInstance.numProjects(); // Verify new project index
+  assert(newProjectIndex.sub(projectIndex).eq(web3.utils.toBN(1)), "One new project should be added");
 
-//   const projectId = newProjectIndex.toNumber() - 1; // Assuming projects are 0-indexed
+  const projectId = newProjectIndex.toNumber() - 1; // Assuming projects are 0-indexed
 
-//   // List and simulate selling some CCT
-//   await carbonCreditMarketInstance.sell(listedCCT, projectId, { from: companyAddress, value: web3.utils.toWei("13", "ether") });
-//   await carbonCreditMarketInstance.buy(soldCCT, companyAddress, projectId, { from: buyerAddress, value: web3.utils.toWei("5", "ether") });
+  // List and simulate selling some CCT
+  await carbonCreditMarketInstance.sell(listedCCT, projectId, { from: companyAddress, value: web3.utils.toWei("13", "ether") });
+  await carbonCreditMarketInstance.buy(soldCCT, companyAddress, projectId, { from: buyerAddress, value: web3.utils.toWei("5", "ether") });
 
-//   // Validate the project with actual CCT greater than sold CCT
-//   let validate = await carbonCreditMarketInstance.validateProject(companyAddress, projectId, true, actualCCT, { from: validatorAddress });
+ // const unsoldCCT = await companyInstance.getProjectcctAmount(projectId);
+  //console.log(`The unsold cct amount is: ${unsoldCCT.toNumber()}`);
+  // Validate the project with actual CCT greater than sold CCT
+  let validate = await carbonCreditMarketInstance.validateProject(companyAddress, projectId, true, actualCCT, { from: validatorAddress });
 
-//   // Fetch the remaining CCT in the project should be actualCCT - soldCCT
-//   const remainingCCT = await companyInstance.getProjectcctAmount(projectId);
-//   const expectedRemainingCCT = actualCCT - soldCCT;
-//   console.log(`Remaining CCT: ${remainingCCT.toNumber()}, Expected: ${expectedRemainingCCT}`);
-//   assert.strictEqual(remainingCCT.toNumber(), expectedRemainingCCT, `Remaining CCT should be set to actual CCT minus sold CCT, expected ${expectedRemainingCCT}`);
+  // Fetch the remaining CCT in the project should be actualCCT - soldCCT
+  const remainingCCT = await companyInstance.getProjectcctAmount(projectId);
+  const expectedRemainingCCT = actualCCT - soldCCT;
+  //console.log(`Remaining CCT: ${remainingCCT.toNumber()}, Expected: ${expectedRemainingCCT}`);
+  assert.strictEqual(remainingCCT.toNumber(), expectedRemainingCCT, `Remaining CCT should be set to actual CCT minus sold CCT, expected ${expectedRemainingCCT}`);
 
-//   // Check event for proper validation
-//   truffleAssert.eventEmitted(validate, 'ProjectValidated', (ev) => {
-//     return ev.isValid === true && ev.projectId.toNumber() === projectId && ev.companyAddress.toLowerCase() === companyAddress.toLowerCase();
-//   }, "Project should be validated as true");
-// });
+  // Check event for proper validation
+  truffleAssert.eventEmitted(validate, 'ProjectValidated', (ev) => {
+    return ev.isValid === true && ev.projectId.toNumber() === projectId && ev.companyAddress.toLowerCase() === companyAddress.toLowerCase();
+  }, "Project should be validated as true");
+});
 
 
 
