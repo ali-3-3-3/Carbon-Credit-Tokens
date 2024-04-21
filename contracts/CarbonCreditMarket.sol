@@ -323,8 +323,8 @@ contract CarbonCreditMarket {
             if (!buyerAdded) {
                 projectBuyers[projectId].push(msg.sender);
             }
-            emit BuyCredit(msg.sender, _cctAmount);
         }
+        emit BuyCredit(msg.sender, _cctAmount);
     }
 
     function getProjectBuyers(
